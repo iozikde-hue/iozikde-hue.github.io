@@ -1,4 +1,4 @@
-// Мод-меню для Undertale. Версия 0.6
+// Мод-меню для Undertale. Версия 0.7
 // M (или русская Ь) — открыть/закрыть меню. 1 — ноуклип, 2 — бессмертие,
 // маленькая кнопка справа в меню — секретный меч (босс с одного удара).
 EnsureDataLoaded();
@@ -74,6 +74,18 @@ if (!variable_global_exists(""modMenu""))
     global.modIntro = 0;
     global.modWasBattle = 0;
     global.modDeity = 0;
+    global.modDHit = 0;
+    global.modDX = 320;
+    global.modDY = 120;
+    global.modDFlash = 0;
+    global.modDReady = 1;
+    global.modTrailN = 0;
+    for (var tri = 0; tri < 12; tri += 1)
+    {
+        global.modTrailT[tri] = 0;
+        global.modTrailX[tri] = 0;
+        global.modTrailY[tri] = 0;
+    }
     global.modArmorCol = make_color_rgb(110, 115, 128);
     // Счётчик побед рыцаря хранится в отдельном файле, чтобы не пропадал
     ini_open(""modknight.ini"");
@@ -218,21 +230,33 @@ if (variable_global_exists(""modMenu""))
         var t = 50 - global.modStab;
         var p = min(1, t / 12);
         var bx = tx + (1 - p) * 420 * s;
-        if (!global.modKnight)
-        {
-        // Меч летит справа и вонзается остриём в цель
-        draw_set_color(make_color_rgb(200, 210, 230));
-        draw_rectangle(bx, ty - 5 * s, bx + 120 * s, ty + 5 * s, false);
-        draw_triangle(bx - 18 * s, ty, bx, ty - 5 * s, bx, ty + 5 * s, false);
+        // Синий луч бьёт снизу прямо во врага
+        var lbx = gw / 2;
+        var lby = gh;
+        var lex = lbx + (tx - lbx) * p;
+        var ley = lby + (ty - lby) * p;
+        var lfade = 1;
+        if (t > 38) lfade = max(0, 1 - (t - 38) / 12);
+        var lw = (14 + sin(current_time / 30) * 4) * s * lfade;
+        draw_set_alpha(0.35 * lfade);
+        draw_set_color(make_color_rgb(40, 110, 255));
+        draw_line_width(lbx, lby, lex, ley, lw * 2.2);
+        draw_set_alpha(0.8 * lfade);
+        draw_set_color(make_color_rgb(70, 160, 255));
+        draw_line_width(lbx, lby, lex, ley, lw);
+        draw_set_alpha(lfade);
+        draw_set_color(make_color_rgb(190, 235, 255));
+        draw_line_width(lbx, lby, lex, ley, lw * 0.45);
         draw_set_color(c_white);
-        draw_line(bx, ty, bx + 118 * s, ty);
-        draw_set_color(make_color_rgb(230, 180, 40));
-        draw_rectangle(bx + 120 * s, ty - 22 * s, bx + 128 * s, ty + 22 * s, false);
-        draw_set_color(make_color_rgb(110, 60, 30));
-        draw_rectangle(bx + 128 * s, ty - 4 * s, bx + 165 * s, ty + 4 * s, false);
-        draw_set_color(make_color_rgb(230, 180, 40));
-        draw_circle(bx + 170 * s, ty, 6 * s, false);
+        draw_line_width(lbx, lby, lex, ley, lw * 0.15);
+        // искры вдоль луча
+        for (var lq = 0; lq < 10; lq += 1)
+        {
+            var lk = random(1);
+            draw_set_color(choose(c_white, make_color_rgb(120, 200, 255)));
+            draw_circle(lbx + (lex - lbx) * lk + random_range(-lw, lw), lby + (ley - lby) * lk + random_range(-lw, lw), (1 + random(3)) * s, false);
         }
+        draw_set_alpha(1);
         if (t >= 12)
         {
             var q = (t - 12) / 38;
@@ -242,8 +266,7 @@ if (variable_global_exists(""modMenu""))
             draw_rectangle(0, 0, gw, gh, false);
             // Красные кольца из точки удара
             draw_set_alpha(1 - q);
-            draw_set_color(c_red);
-            if (global.modKnight) draw_set_color(global.modFC1);
+            draw_set_color(make_color_rgb(70, 160, 255));
             draw_circle(tx - 18 * s, ty, (10 + q * 90) * s, true);
             draw_circle(tx - 18 * s, ty, (5 + q * 60) * s, true);
             draw_circle(tx - 18 * s, ty, 8 * s * (1 - q), false);
@@ -741,7 +764,7 @@ if (variable_global_exists(""modKnight""))
     sw[18] = ""..g.."";
     sw[19] = "".KRK."";
     // Ультра-атака в бою: рыцарь берёт летающий меч и кидает его во врага
-    if (global.modKnight && global.modStab > 0)
+    if (0)
     {
         var s = gw / 640;
         var bk = gw / 640;
@@ -1243,6 +1266,10 @@ if (variable_global_exists(""modIntro""))
   }
 }
 ");
+
+
+
+
 
 
 group.Import();

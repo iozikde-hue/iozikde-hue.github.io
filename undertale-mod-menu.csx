@@ -1,4 +1,4 @@
-// Мод-меню для Undertale. Версия 0.4
+// Мод-меню для Undertale. Версия 0.5
 // M (или русская Ь) — открыть/закрыть меню. 1 — ноуклип, 2 — бессмертие,
 // маленькая кнопка справа в меню — секретный меч (босс с одного удара).
 EnsureDataLoaded();
@@ -54,6 +54,22 @@ if (!variable_global_exists(""modMenu""))
     global.modRegen = 0;
     global.modTX = 0;
     global.modTY = 0;
+    global.modFlame = 0;
+    global.modFast = 0;
+    global.modFastOn = 0;
+    global.modDash = 0;
+    global.modDashDX = 0;
+    global.modDashDY = 0;
+    global.modFC1 = make_color_rgb(95, 224, 255);
+    global.modFC2 = make_color_rgb(30, 140, 255);
+    global.modFC3 = make_color_rgb(150, 235, 255);
+    global.modSeen[0] = 0;
+    global.modSeen[1] = 0;
+    global.modSeen[2] = 0;
+    // Счётчик побед рыцаря хранится в отдельном файле, чтобы не пропадал
+    ini_open(""modknight.ini"");
+    global.modKills = ini_read_real(""knight"", ""kills"", 0);
+    ini_close();
 }
 var modKey = keyboard_check_pressed(ord(""M""));
 if (keyboard_lastchar == ""ь"" || keyboard_lastchar == ""Ь"")
@@ -75,10 +91,19 @@ if (global.modMenu)
         if (mx > px && mx < px + 200 * s && my > py + 40 * s && my < py + 70 * s) global.modNoclip = !global.modNoclip;
         if (mx > px && mx < px + 200 * s && my > py + 80 * s && my < py + 110 * s) global.modGod = !global.modGod;
         if (mx > px + pw - 24 * s && mx < px + pw - 4 * s && my > py + 130 * s && my < py + 150 * s) global.modSword = !global.modSword;
+        if (mx > px && mx < px + 200 * s && my > py + 120 * s && my < py + 150 * s)
+        {
+            global.modKnight = !global.modKnight;
+            if (!global.modKnight && instance_exists(obj_mainchara)) obj_mainchara.visible = 1;
+        }
+        if (mx > px && mx < px + 240 * s && my > py + 160 * s && my < py + 190 * s) global.modFlame = (global.modFlame + 1) mod 4;
+        if (mx > px && mx < px + 240 * s && my > py + 200 * s && my < py + 230 * s) global.modFast = !global.modFast;
     }
     if (keyboard_check_pressed(ord(""1""))) global.modNoclip = !global.modNoclip;
     if (keyboard_check_pressed(ord(""2""))) global.modGod = !global.modGod;
     if (keyboard_check_pressed(ord(""3""))) global.modSword = !global.modSword;
+    if (keyboard_check_pressed(ord(""5""))) global.modFlame = (global.modFlame + 1) mod 4;
+    if (keyboard_check_pressed(ord(""6""))) global.modFast = !global.modFast;
     if (keyboard_check_pressed(ord(""4"")))
     {
         global.modKnight = !global.modKnight;
@@ -131,10 +156,10 @@ if (variable_global_exists(""modMenu""))
         var py = 60 * s;
         var pw = 260 * s;
         draw_set_color(c_black);
-        draw_rectangle(px, py, px + pw, py + 160 * s, false);
+        draw_rectangle(px, py, px + pw, py + 270 * s, false);
         draw_set_color(c_white);
-        draw_rectangle(px, py, px + pw, py + 160 * s, true);
-        draw_rectangle(px + 2 * s, py + 2 * s, px + pw - 2 * s, py + 158 * s, true);
+        draw_rectangle(px, py, px + pw, py + 270 * s, true);
+        draw_rectangle(px + 2 * s, py + 2 * s, px + pw - 2 * s, py + 268 * s, true);
         draw_set_color(c_yellow);
         draw_text_transformed(px + 12 * s, py + 10 * s, ""MOD MENU  [M]"", s, s, 0);
         var t1 = ""1) NOCLIP: OFF"";
@@ -149,6 +174,18 @@ if (variable_global_exists(""modMenu""))
         draw_set_color(c_white);
         if (global.modKnight) { t4 = ""4) KNIGHT: ON  [U]""; draw_set_color(c_aqua); }
         draw_text_transformed(px + 12 * s, py + 125 * s, t4, s, s, 0);
+        var t5 = ""5) FLAME: BLUE"";
+        if (global.modFlame == 1) t5 = ""5) FLAME: RED"";
+        if (global.modFlame == 2) t5 = ""5) FLAME: PURPLE"";
+        if (global.modFlame == 3) t5 = ""5) FLAME: GREEN"";
+        draw_set_color(global.modFC1);
+        draw_text_transformed(px + 12 * s, py + 165 * s, t5, s, s, 0);
+        var t6 = ""6) FAST BATTLE: OFF"";
+        draw_set_color(c_white);
+        if (global.modFast) { t6 = ""6) FAST BATTLE: ON""; draw_set_color(c_lime); }
+        draw_text_transformed(px + 12 * s, py + 205 * s, t6, s, s, 0);
+        draw_set_color(c_gray);
+        draw_text_transformed(px + 12 * s, py + 240 * s, ""KNIGHT WINS: "" + string(global.modKills), s, s, 0);
         // Секретная кнопка: маленький тёмный квадрат справа внизу
         draw_set_color(make_color_rgb(40, 40, 40));
         if (global.modSword) draw_set_color(c_red);
@@ -194,7 +231,7 @@ if (variable_global_exists(""modMenu""))
             // Красные кольца из точки удара
             draw_set_alpha(1 - q);
             draw_set_color(c_red);
-            if (global.modKnight) draw_set_color(c_aqua);
+            if (global.modKnight) draw_set_color(global.modFC1);
             draw_circle(tx - 18 * s, ty, (10 + q * 90) * s, true);
             draw_circle(tx - 18 * s, ty, (5 + q * 60) * s, true);
             draw_circle(tx - 18 * s, ty, 8 * s * (1 - q), false);
@@ -392,6 +429,25 @@ if (variable_global_exists(""modKnight""))
         var kcx = round((bbox_left + bbox_right) / 2);
         var bx = kcx - 7;
         var by = bbox_bottom - 25 - 5 + hv;
+        // Рывок: позади остаются цветные призраки рыцаря
+        if (global.modDash > 0)
+        {
+            for (var gi = 1; gi <= 3; gi += 1)
+            {
+                draw_set_alpha(0.45 - gi * 0.12);
+                draw_set_color(global.modFC1);
+                var gx = bx - global.modDashDX * gi * 6;
+                var gy = by - global.modDashDY * gi * 6;
+                for (var gr = 0; gr < 25; gr += 1)
+                {
+                    for (var gc = 0; gc < 14; gc += 1)
+                    {
+                        if (string_char_at(kn[gr], gc + 1) != ""."") draw_rectangle(gx + gc, gy + gr, gx + gc + 0.5, gy + gr + 0.5, false);
+                    }
+                }
+            }
+            draw_set_alpha(1);
+        }
         // Тень на земле: меньше, когда он выше
         draw_set_alpha(0.35);
         draw_set_color(c_black);
@@ -423,7 +479,7 @@ if (variable_global_exists(""modKnight""))
         // Синее пламя под ногами
         for (var fl = 0; fl < 4; fl += 1)
         {
-            { var qx = kcx + irandom_range(-3, 2); var qy = by + 25 + irandom(3); draw_set_color(choose(c_aqua, make_color_rgb(30, 140, 255), c_white)); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
+            { var qx = kcx + irandom_range(-3, 2); var qy = by + 25 + irandom(3); draw_set_color(choose(global.modFC1, global.modFC2, c_white)); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
         }
         for (var r = 0; r < 25; r += 1)
         {
@@ -440,10 +496,10 @@ if (variable_global_exists(""modKnight""))
                     else if (ch == ""G"") col = make_color_rgb(58, 60, 70);
                     else if (ch == ""g"") col = make_color_rgb(38, 39, 47);
                     else if (ch == ""H"") col = make_color_rgb(110, 115, 128);
-                    else if (ch == ""E"") col = make_color_rgb(90, 210, 255);
+                    else if (ch == ""E"") col = global.modFC1;
                     else if (ch == ""W"") col = c_white;
-                    else if (ch == ""C"") col = make_color_rgb(95, 224, 255);
-                    else if (ch == ""B"") col = make_color_rgb(30, 140, 255);
+                    else if (ch == ""C"") col = global.modFC1;
+                    else if (ch == ""B"") col = global.modFC2;
                     { var qx = bx + c; var qy = by + r; draw_set_color(col); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
                 }
             }
@@ -455,8 +511,8 @@ if (variable_global_exists(""modKnight""))
             {
                 if (string_char_at(kn[6], c2 + 1) == ""E"")
                 {
-                    if (random(1) < 0.7) { var qx = bx + c2; var qy = by + 5; draw_set_color(make_color_rgb(150, 235, 255)); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
-                    if (random(1) < 0.4) { var qx = bx + c2 + choose(-1, 0, 1); var qy = by + 4; draw_set_color(c_aqua); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
+                    if (random(1) < 0.7) { var qx = bx + c2; var qy = by + 5; draw_set_color(global.modFC3); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
+                    if (random(1) < 0.4) { var qx = bx + c2 + choose(-1, 0, 1); var qy = by + 4; draw_set_color(global.modFC1); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
                     if (random(1) < 0.2) { var qx = bx + c2; var qy = by + 3; draw_set_color(c_white); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
                 }
             }
@@ -491,10 +547,10 @@ if (variable_global_exists(""modKnight""))
                     else if (ch == ""G"") col = make_color_rgb(58, 60, 70);
                     else if (ch == ""g"") col = make_color_rgb(38, 39, 47);
                     else if (ch == ""H"") col = make_color_rgb(110, 115, 128);
-                    else if (ch == ""E"") col = make_color_rgb(90, 210, 255);
+                    else if (ch == ""E"") col = global.modFC1;
                     else if (ch == ""W"") col = c_white;
-                    else if (ch == ""C"") col = make_color_rgb(95, 224, 255);
-                    else if (ch == ""B"") col = make_color_rgb(30, 140, 255);
+                    else if (ch == ""C"") col = global.modFC1;
+                    else if (ch == ""B"") col = global.modFC2;
                             { var qx = sx + c3; var qy = sy + r3; draw_set_color(col); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
                         }
                     }
@@ -502,7 +558,7 @@ if (variable_global_exists(""modKnight""))
                 // Голубое пламя по клинку
                 for (var f = 0; f < 4; f += 1)
                 {
-                    { var qx = sx + choose(0, 4); var qy = sy + irandom(14); draw_set_color(choose(c_aqua, c_white, make_color_rgb(95, 224, 255))); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
+                    { var qx = sx + choose(0, 4); var qy = sy + irandom(14); draw_set_color(choose(global.modFC1, c_white, global.modFC3)); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
                 }
             }
         }
@@ -535,17 +591,17 @@ if (variable_global_exists(""modKnight""))
                     else if (ch == ""G"") col = make_color_rgb(58, 60, 70);
                     else if (ch == ""g"") col = make_color_rgb(38, 39, 47);
                     else if (ch == ""H"") col = make_color_rgb(110, 115, 128);
-                    else if (ch == ""E"") col = make_color_rgb(90, 210, 255);
+                    else if (ch == ""E"") col = global.modFC1;
                     else if (ch == ""W"") col = c_white;
-                    else if (ch == ""C"") col = make_color_rgb(95, 224, 255);
-                    else if (ch == ""B"") col = make_color_rgb(30, 140, 255);
+                    else if (ch == ""C"") col = global.modFC1;
+                    else if (ch == ""B"") col = global.modFC2;
                         { var qx = tsx + px4; var qy = tsy + py4; draw_set_color(col); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
                     }
                 }
             }
             for (var tr = 0; tr < 6; tr += 1)
             {
-                { var qx = tsx + 2 + irandom_range(-3, 3); var qy = tsy + 9 + irandom_range(-4, 4); draw_set_color(choose(c_aqua, c_white)); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
+                { var qx = tsx + 2 + irandom_range(-3, 3); var qy = tsy + 9 + irandom_range(-4, 4); draw_set_color(choose(global.modFC1, c_white)); draw_rectangle(qx, qy, qx + 0.5, qy + 0.5, false); }
             }
         }
         draw_set_color(c_white);
@@ -604,8 +660,8 @@ if (variable_global_exists(""modKnight""))
                 {
                     var col5 = make_color_rgb(92, 97, 106);
                     if (ch5 == ""W"") col5 = c_white;
-                    else if (ch5 == ""C"") col5 = make_color_rgb(95, 224, 255);
-                    else if (ch5 == ""B"") col5 = make_color_rgb(30, 140, 255);
+                    else if (ch5 == ""C"") col5 = global.modFC1;
+                    else if (ch5 == ""B"") col5 = global.modFC2;
                     else if (ch5 == ""R"") col5 = make_color_rgb(30, 30, 38);
                     else if (ch5 == ""K"") col5 = make_color_rgb(4, 4, 8);
                     draw_set_color(col5);
@@ -614,7 +670,7 @@ if (variable_global_exists(""modKnight""))
             }
         }
         draw_set_alpha(0.6);
-        draw_set_color(c_aqua);
+        draw_set_color(global.modFC1);
         for (var tr2 = 0; tr2 < 6; tr2 += 1)
         {
             draw_circle(fx + 2.5 * ps + random_range(-6, 6) * s, fy + random_range(0, 60) * s, (2 + random(4)) * s, false);
@@ -637,6 +693,11 @@ if (variable_global_exists(""modKnight""))
         global.modKHit = 0;
         global.modKX = 320;
         global.modKY = 120;
+        global.modDefA = 0;
+        global.modDefCD = 0;
+        global.modDefFX = 0;
+        global.modDefX = 0;
+        global.modDefY = 0;
     }
     if (global.modKnight && instance_exists(obj_heart))
     {
@@ -674,6 +735,31 @@ if (variable_global_exists(""modKnight""))
             }
             global.modKHit = 90;
         }
+        // Щупальца-защитники: кружат вокруг души и иногда сбивают пулю
+        global.modDefA += 6;
+        if (global.modDefCD > 0) global.modDefCD -= 1;
+        var dcx = obj_heart.x + 8;
+        var dcy = obj_heart.y + 8;
+        for (var di = 0; di < 2; di += 1)
+        {
+            var dox = dcx + lengthdir_x(22, global.modDefA + di * 180);
+            var doy = dcy + lengthdir_y(22, global.modDefA + di * 180);
+            if (global.modDefCD <= 0 && instance_exists(blt_parent))
+            {
+                var db = instance_nearest(dox, doy, blt_parent);
+                if (db != noone)
+                {
+                    if (point_distance(dox, doy, (db.bbox_left + db.bbox_right) / 2, (db.bbox_top + db.bbox_bottom) / 2) < 16)
+                    {
+                        with (db) instance_destroy();
+                        global.modDefCD = 40;
+                        global.modDefFX = 10;
+                        global.modDefX = dox;
+                        global.modDefY = doy;
+                    }
+                }
+            }
+        }
     }
     else
     {
@@ -682,6 +768,7 @@ if (variable_global_exists(""modKnight""))
         global.modCalm = 0;
     }
     if (global.modKHit > 0) global.modKHit -= 1;
+    if (global.modDefFX > 0) global.modDefFX -= 1;
     global.modLastHP = global.hp;
 }
 ");
@@ -707,7 +794,7 @@ if (variable_global_exists(""modShield""))
             {
                 var hx = (x - view_xview[0]) * kkx;
                 var hy = (y - view_yview[0]) * kky;
-                d3d_set_fog(true, make_color_rgb(90, 210, 255), 0, 0);
+                d3d_set_fog(true, global.modFC1, 0, 0);
                 draw_sprite_ext(sprite_index, image_index, hx - kkx, hy, kkx, kky, 0, c_white, 1);
                 draw_sprite_ext(sprite_index, image_index, hx + kkx, hy, kkx, kky, 0, c_white, 1);
                 draw_sprite_ext(sprite_index, image_index, hx, hy - kky, kkx, kky, 0, c_white, 1);
@@ -717,13 +804,43 @@ if (variable_global_exists(""modShield""))
                 d3d_set_fog(false, c_black, 0, 0);
             }
         }
+        // Щупальца-защитники вокруг души
+        var dhx = (obj_heart.x + 8 - view_xview[0]) * kkx;
+        var dhy = (obj_heart.y + 8 - view_yview[0]) * kky;
+        for (var dj = 0; dj < 2; dj += 1)
+        {
+            for (var dq = 0; dq < 5; dq += 1)
+            {
+                var dang = global.modDefA + dj * 180 - dq * 9;
+                var ddx = dhx + lengthdir_x(22 * kkx, dang);
+                var ddy = dhy + lengthdir_y(22 * kky, dang);
+                var drr = (5 - dq * 0.8) * kkx;
+                draw_set_color(make_color_rgb(8, 6, 14));
+                draw_circle(ddx, ddy, drr, false);
+                if (dq == 0)
+                {
+                    draw_set_color(global.modFC1);
+                    draw_circle(ddx, ddy, drr, true);
+                }
+            }
+        }
+        if (global.modDefFX > 0)
+        {
+            draw_set_alpha(global.modDefFX / 10);
+            draw_set_color(global.modFC1);
+            var dfx = (global.modDefX - view_xview[0]) * kkx;
+            var dfy = (global.modDefY - view_yview[0]) * kky;
+            draw_circle(dfx, dfy, (18 - global.modDefFX) * 2 * ks, true);
+            draw_circle(dfx, dfy, (18 - global.modDefFX) * ks, true);
+            draw_set_alpha(1);
+        }
         // Полоска щита
         draw_set_font(fnt_maintext);
-        draw_set_color(c_aqua);
+        draw_set_color(global.modFC1);
         draw_text_transformed(20 * ks, 12 * ks, ""SHIELD"", ks, ks, 0);
         draw_set_color(make_color_rgb(20, 30, 50));
         draw_rectangle(110 * ks, 16 * ks, 210 * ks, 30 * ks, false);
-        draw_set_color(make_color_rgb(90, 210, 255));
+        draw_set_color(global.modFC1);
         if (global.modShield > 0) draw_rectangle(110 * ks, 16 * ks, (110 + global.modShield * 5) * ks, 30 * ks, false);
         draw_set_color(c_white);
         draw_rectangle(110 * ks, 16 * ks, 210 * ks, 30 * ks, true);
@@ -754,7 +871,7 @@ if (variable_global_exists(""modShield""))
             if (kp >= 1)
             {
                 draw_set_alpha(max(0, 1 - (kt - 0.4) * 2));
-                draw_set_color(c_aqua);
+                draw_set_color(global.modFC1);
                 draw_text_transformed(ktx - 40 * ks, kty - 60 * ks, ""+20"", ks * 1.5, ks * 1.5, 0);
                 draw_set_alpha(1);
             }
@@ -817,5 +934,95 @@ if (variable_global_exists(""modGod""))
 }
 ");
 
+// ===== Версия 0.5: цвет пламени, быстрый бой, счётчик побед =====
+group.QueueAppend("gml_Object_obj_time_Step_1", @"
+if (variable_global_exists(""modFlame""))
+{
+    // Цвет пламени
+    if (global.modFlame == 0) { global.modFC1 = make_color_rgb(95, 224, 255); global.modFC2 = make_color_rgb(30, 140, 255); global.modFC3 = make_color_rgb(150, 235, 255); }
+    if (global.modFlame == 1) { global.modFC1 = make_color_rgb(255, 90, 80); global.modFC2 = make_color_rgb(200, 20, 30); global.modFC3 = make_color_rgb(255, 180, 170); }
+    if (global.modFlame == 2) { global.modFC1 = make_color_rgb(200, 110, 255); global.modFC2 = make_color_rgb(120, 40, 220); global.modFC3 = make_color_rgb(230, 190, 255); }
+    if (global.modFlame == 3) { global.modFC1 = make_color_rgb(110, 255, 140); global.modFC2 = make_color_rgb(20, 170, 60); global.modFC3 = make_color_rgb(190, 255, 200); }
+    // Быстрый бой: когда пуль нет (разговоры, меню), игра идёт в 2 раза быстрее
+    if (global.modFast && instance_exists(obj_heart))
+    {
+        var fsp = 60;
+        if (instance_exists(blt_parent)) fsp = 30;
+        room_speed = fsp;
+        global.modFastOn = 1;
+    }
+    else
+    {
+        if (global.modFastOn)
+        {
+            room_speed = 30;
+            global.modFastOn = 0;
+        }
+    }
+    // Счётчик побед рыцаря
+    var inb = 0;
+    if (instance_exists(obj_heart) && variable_global_exists(""monsterhp""))
+    {
+        if (variable_global_exists(""monsterinstance"")) inb = 1;
+    }
+    if (inb)
+    {
+        var vn = min(3, min(array_length_1d(global.monsterhp), array_length_1d(global.monsterinstance)));
+        for (var vi = 0; vi < vn; vi += 1)
+        {
+            if (global.modSeen[vi] == 0 && global.monsterhp[vi] > 0)
+            {
+                if (instance_exists(global.monsterinstance[vi])) global.modSeen[vi] = 1;
+            }
+            if (global.modSeen[vi] == 1 && global.monsterhp[vi] <= 0)
+            {
+                global.modSeen[vi] = 2;
+                if (global.modKnight)
+                {
+                    global.modKills += 1;
+                    ini_open(""modknight.ini"");
+                    ini_write_real(""knight"", ""kills"", global.modKills);
+                    ini_close();
+                }
+            }
+        }
+    }
+    else
+    {
+        global.modSeen[0] = 0;
+        global.modSeen[1] = 0;
+        global.modSeen[2] = 0;
+    }
+}
+");
+
+// ===== Версия 0.5: рывок рыцаря на Shift =====
+group.QueueAppend("gml_Object_obj_mainchara_Step_0", @"
+if (variable_global_exists(""modDash""))
+{
+    if (global.modKnight && global.modDash <= 0 && global.interact == 0 && keyboard_check_pressed(vk_shift))
+    {
+        global.modDash = 7;
+        global.modDashDX = 0;
+        global.modDashDY = 0;
+        if (global.modFace == 0) global.modDashDY = 1;
+        if (global.modFace == 1) global.modDashDY = -1;
+        if (global.modFace == 2) global.modDashDX = 1;
+        if (global.modFace == 3) global.modDashDX = -1;
+    }
+    if (global.modDash > 0)
+    {
+        // Перед стеной рывок останавливается
+        if (place_meeting(x + global.modDashDX * 5, y + global.modDashDY * 5, obj_solidparent)) global.modDash = 0;
+        else
+        {
+            x += global.modDashDX * 5;
+            y += global.modDashDY * 5;
+            global.modDash -= 1;
+        }
+    }
+}
+");
+
 group.Import();
-ScriptMessage("Мод-меню установлено: M — меню, 4 — рыцарь, U — бросок меча, в бою у рыцаря душа, щит и щупальца");
+ScriptMessage("Мод-меню установлено: M — меню, 4 — рыцарь, U — бросок меча, Shift — рывок, 5 — цвет пламени, 6 — быстрый бой");

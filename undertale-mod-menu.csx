@@ -1,4 +1,4 @@
-// Мод-меню для Undertale. Версия 0.7
+// Мод-меню для Undertale. Версия 0.8
 // M (или русская Ь) — открыть/закрыть меню. 1 — ноуклип, 2 — бессмертие,
 // маленькая кнопка справа в меню — секретный меч (босс с одного удара).
 EnsureDataLoaded();
@@ -87,9 +87,111 @@ if (!variable_global_exists(""modMenu""))
         global.modTrailY[tri] = 0;
     }
     global.modArmorCol = make_color_rgb(110, 115, 128);
-    // Счётчик побед рыцаря хранится в отдельном файле, чтобы не пропадал
+    global.modNoEnc = 0;
+    global.modGold = 0;
+    global.modHeal = 0;
+    global.modGo = 0;
+    global.modPhoto = 0;
+    global.modPlace = 0;
+    global.modLang = 0;
+    global.modSig = """";
+    global.modPlaceEN[0] = ""RUINS"";
+    global.modPlaceRU[0] = ""РУИНЫ"";
+    global.modPlaceRoom[0] = ""room_ruins1"";
+    global.modPlaceEN[1] = ""SNOWDIN"";
+    global.modPlaceRU[1] = ""СНОУДИН"";
+    global.modPlaceRoom[1] = ""room_tundra1"";
+    global.modPlaceEN[2] = ""WATERFALL"";
+    global.modPlaceRU[2] = ""ВОДОПАД"";
+    global.modPlaceRoom[2] = ""room_water1"";
+    global.modPlaceEN[3] = ""HOTLAND"";
+    global.modPlaceRU[3] = ""ХОТЛЕНД"";
+    global.modPlaceRoom[3] = ""room_fire1"";
+    global.modPlaceEN[4] = ""NEW HOME"";
+    global.modPlaceRU[4] = ""НОВЫЙ ДОМ"";
+    global.modPlaceRoom[4] = ""room_castle_front"";
+    // Русский пиксельный шрифт для меню (в шрифтах игры нет русских букв)
+    global.modFont = ds_map_create();
+    ds_map_add(global.modFont, ""А"", "".###.#...##...#######...##...##...#"");
+    ds_map_add(global.modFont, ""Б"", ""######....#....####.#...##...#####."");
+    ds_map_add(global.modFont, ""В"", ""####.#...##...#####.#...##...#####."");
+    ds_map_add(global.modFont, ""Г"", ""######....#....#....#....#....#...."");
+    ds_map_add(global.modFont, ""Д"", ""..###.#..#.#..#.#..#.#..#######...#"");
+    ds_map_add(global.modFont, ""Е"", ""######....#....####.#....#....#####"");
+    ds_map_add(global.modFont, ""Ё"", "".#.#.######....####.#....#....#####"");
+    ds_map_add(global.modFont, ""Ж"", ""#.#.##.#.#.###...#...###.#.#.##.#.#"");
+    ds_map_add(global.modFont, ""З"", "".###.#...#....#..##.....##...#.###."");
+    ds_map_add(global.modFont, ""И"", ""#...##...##..###.#.###..##...##...#"");
+    ds_map_add(global.modFont, ""Й"", ""..#..#...##..###.#.###..##...##...#"");
+    ds_map_add(global.modFont, ""К"", ""#...##..#.#.#..##...#.#..#..#.#...#"");
+    ds_map_add(global.modFont, ""Л"", ""..###.#..#.#..#.#..#.#..##...##...#"");
+    ds_map_add(global.modFont, ""М"", ""#...###.###.#.##.#.##...##...##...#"");
+    ds_map_add(global.modFont, ""Н"", ""#...##...##...#######...##...##...#"");
+    ds_map_add(global.modFont, ""О"", "".###.#...##...##...##...##...#.###."");
+    ds_map_add(global.modFont, ""П"", ""######...##...##...##...##...##...#"");
+    ds_map_add(global.modFont, ""Р"", ""####.#...##...#####.#....#....#...."");
+    ds_map_add(global.modFont, ""С"", "".###.#...##....#....#....#...#.###."");
+    ds_map_add(global.modFont, ""Т"", ""#####..#....#....#....#....#....#.."");
+    ds_map_add(global.modFont, ""У"", ""#...##...##...#.####....##...#.###."");
+    ds_map_add(global.modFont, ""Ф"", ""..#...###.#.#.##.#.#.###...#....#.."");
+    ds_map_add(global.modFont, ""Х"", ""#...##...#.#.#...#...#.#.#...##...#"");
+    ds_map_add(global.modFont, ""Ц"", ""#..#.#..#.#..#.#..#.#..#.#####....#"");
+    ds_map_add(global.modFont, ""Ч"", ""#...##...##...#.####....#....#....#"");
+    ds_map_add(global.modFont, ""Ш"", ""#.#.##.#.##.#.##.#.##.#.##.#.######"");
+    ds_map_add(global.modFont, ""Щ"", ""#.#.##.#.##.#.##.#.##.#.######....#"");
+    ds_map_add(global.modFont, ""Ъ"", ""##....#....#....###..#..#.#..#.###."");
+    ds_map_add(global.modFont, ""Ы"", ""#...##...##...####.##.#.##.#.####.#"");
+    ds_map_add(global.modFont, ""Ь"", ""#....#....#....####.#...##...#####."");
+    ds_map_add(global.modFont, ""Э"", "".###.#...#....#..###....##...#.###."");
+    ds_map_add(global.modFont, ""Ю"", ""#..#.#.#.##.#.####.##.#.##.#.##..#."");
+    ds_map_add(global.modFont, ""Я"", "".#####...##...#.####..#.#.#..##...#"");
+    ds_map_add(global.modFont, ""0"", "".###.#...##..###.#.###..##...#.###."");
+    ds_map_add(global.modFont, ""1"", ""..#...##....#....#....#....#...###."");
+    ds_map_add(global.modFont, ""2"", "".###.#...#....#...#...#...#...#####"");
+    ds_map_add(global.modFont, ""3"", ""#####...#...#.....#.....##...#.###."");
+    ds_map_add(global.modFont, ""4"", ""...#...##..#.#.#..#.#####...#....#."");
+    ds_map_add(global.modFont, ""5"", ""######....####.....#....##...#.###."");
+    ds_map_add(global.modFont, ""6"", ""..##..#...#....####.#...##...#.###."");
+    ds_map_add(global.modFont, ""7"", ""#####....#...#...#...#....#....#..."");
+    ds_map_add(global.modFont, ""8"", "".###.#...##...#.###.#...##...#.###."");
+    ds_map_add(global.modFont, ""9"", "".###.#...##...#.####....#...#..##.."");
+    ds_map_add(global.modFont, "")"", "".#.....#.....#....#....#...#...#..."");
+    ds_map_add(global.modFont, ""("", ""...#...#...#....#....#.....#.....#."");
+    ds_map_add(global.modFont, "":"", "".......#....#.........#....#......."");
+    ds_map_add(global.modFont, ""-"", ""................###................"");
+    ds_map_add(global.modFont, ""+"", "".......#....#..#####..#....#......."");
+    ds_map_add(global.modFont, ""["", "".###..#....#....#....#....#....###."");
+    ds_map_add(global.modFont, ""]"", "".###....#....#....#....#....#..###."");
+    ds_map_add(global.modFont, ""."", ""..........................##...##.."");
+    ds_map_add(global.modFont, ""!"", ""..#....#....#....#....#.........#.."");
+    ds_map_add(global.modFont, ""U"", ""#...##...##...##...##...##...#.###."");
+    ds_map_add(global.modFont, ""F"", ""######....#....####.#....#....#...."");
+    ds_map_add(global.modFont, ""J"", ""..###...#....#....#....#.#..#..##.."");
+    ds_map_add(global.modFont, ""G"", "".###.#...##....#.####...##...#.###."");
+    ds_map_add(global.modFont, ""R"", ""####.#...##...#####.#.#..#..#.#...#"");
+    ds_map_add(global.modFont, ""N"", ""#...###..##.#.##..###...##...##...#"");
+    ds_map_add(global.modFont, ""M"", ""#...###.###.#.##.#.##...##...##...#"");
+    ds_map_add(global.modFont, ""H"", ""#...##...##...#######...##...##...#"");
+    ds_map_add(global.modFont, ""K"", ""#...##..#.#.#..##...#.#..#..#.#...#"");
+    ds_map_add(global.modFont, ""E"", ""######....#....####.#....#....#####"");
+    ds_map_add(global.modFont, ""A"", "".###.#...##...#######...##...##...#"");
+    ds_map_add(global.modFont, ""O"", "".###.#...##...##...##...##...#.###."");
+    ds_map_add(global.modFont, ""P"", ""####.#...##...#####.#....#....#...."");
+    ds_map_add(global.modFont, ""C"", "".###.#...##....#....#....#...#.###."");
+    ds_map_add(global.modFont, ""T"", ""#####..#....#....#....#....#....#.."");
+    ds_map_add(global.modFont, ""X"", ""#...##...#.#.#...#...#.#.#...##...#"");
+    ds_map_add(global.modFont, ""B"", ""####.#...##...#####.#...##...#####."");
+    // Счётчик побед и настройки хранятся в отдельном файле, чтобы не пропадали
     ini_open(""modknight.ini"");
     global.modKills = ini_read_real(""knight"", ""kills"", 0);
+    global.modGod = ini_read_real(""set"", ""god"", 0);
+    global.modKnight = ini_read_real(""set"", ""knight"", 0);
+    global.modFlame = ini_read_real(""set"", ""flame"", 0);
+    global.modFast = ini_read_real(""set"", ""fast"", 0);
+    global.modDeity = ini_read_real(""set"", ""deity"", 0);
+    global.modWalk = ini_read_real(""set"", ""walk"", 0);
+    global.modNoEnc = ini_read_real(""set"", ""noenc"", 0);
+    global.modLang = ini_read_real(""set"", ""lang"", 0);
     ini_close();
 }
 var modKey = keyboard_check_pressed(ord(""M""));
@@ -98,13 +200,18 @@ if (keyboard_lastchar == ""ь"" || keyboard_lastchar == ""Ь"")
     modKey = 1;
     keyboard_lastchar = """";
 }
-if (modKey) global.modMenu = !global.modMenu;
+if (modKey)
+{
+    global.modMenu = !global.modMenu;
+    global.modPhoto = 0;
+}
 if (global.modMenu)
 {
     var s = display_get_gui_width() / 640;
     var px = 20 * s;
     var py = 60 * s;
-    var pw = 260 * s;
+    var pw = 300 * s;
+    var px2 = px + pw + 10 * s;
     var mx = device_mouse_x_to_gui(0);
     var my = device_mouse_y_to_gui(0);
     if (mouse_check_button_pressed(mb_left))
@@ -120,7 +227,25 @@ if (global.modMenu)
         }
         if (mx > px && mx < px + 240 * s && my > py + 160 * s && my < py + 190 * s) global.modFlame = (global.modFlame + 1) mod 4;
         if (mx > px && mx < px + 240 * s && my > py + 200 * s && my < py + 230 * s) global.modFast = !global.modFast;
+        // Кнопка языка в правом верхнем углу меню
+        if (mx > px + pw - 56 * s && mx < px + pw - 8 * s && my > py + 6 * s && my < py + 32 * s) global.modLang = !global.modLang;
+        // Второе окно
+        if (mx > px2 && mx < px2 + pw)
+        {
+            if (my > py + 40 * s && my < py + 70 * s) global.modWalk = !global.modWalk;
+            if (my > py + 75 * s && my < py + 105 * s) global.modNoEnc = !global.modNoEnc;
+            if (my > py + 110 * s && my < py + 140 * s) global.modGold = 1;
+            if (my > py + 145 * s && my < py + 175 * s) global.modHeal = 1;
+            if (my > py + 180 * s && my < py + 210 * s) global.modPlace = (global.modPlace + 1) mod 5;
+            if (my > py + 215 * s && my < py + 245 * s) global.modGo = 1;
+        }
     }
+    if (keyboard_check_pressed(ord(""8""))) global.modWalk = !global.modWalk;
+    if (keyboard_check_pressed(ord(""9""))) global.modNoEnc = !global.modNoEnc;
+    if (keyboard_check_pressed(ord(""0""))) global.modGold = 1;
+    if (keyboard_check_pressed(ord(""H""))) global.modHeal = 1;
+    if (keyboard_check_pressed(ord(""J""))) global.modPlace = (global.modPlace + 1) mod 5;
+    if (keyboard_check_pressed(ord(""G""))) global.modGo = 1;
     if (keyboard_check_pressed(ord(""1""))) global.modNoclip = !global.modNoclip;
     if (keyboard_check_pressed(ord(""2""))) global.modGod = !global.modGod;
     if (keyboard_check_pressed(ord(""3""))) global.modSword = !global.modSword;
@@ -132,6 +257,63 @@ if (global.modMenu)
         if (global.modKnight) global.modDeity = 0;
         if (!global.modKnight && instance_exists(obj_mainchara)) obj_mainchara.visible = 1;
     }
+}
+// +100 золота
+if (variable_global_exists(""modGold""))
+{
+    if (global.modGold)
+    {
+        global.gold += 100;
+        global.modGold = 0;
+        var gsn = asset_get_index(""snd_item"");
+        if (gsn >= 0) snd_play(gsn);
+    }
+}
+// Лечебные предметы: заполняем пустые места в инвентаре
+if (variable_global_exists(""modHeal""))
+{
+    if (global.modHeal)
+    {
+        for (var hi = 0; hi < 8; hi += 1)
+        {
+            if (global.item[hi] == 0) global.item[hi] = 1;
+        }
+        global.modHeal = 0;
+        var hsn = asset_get_index(""snd_heal_c"");
+        if (hsn >= 0) snd_play(hsn);
+    }
+}
+// Телепорт в выбранное место
+if (variable_global_exists(""modGo""))
+{
+    if (global.modGo)
+    {
+        global.modGo = 0;
+        var tpr = asset_get_index(global.modPlaceRoom[global.modPlace]);
+        if (tpr >= 0 && instance_exists(obj_mainchara) && global.interact == 0)
+        {
+            global.modMenu = 0;
+            global.interact = 3;
+            global.entrance = 1;
+            room_goto(tpr);
+        }
+    }
+}
+// Настройки сохраняются, как только что-то поменялось
+var msig = string(global.modGod) + string(global.modKnight) + string(global.modFlame) + string(global.modFast) + string(global.modDeity) + string(global.modWalk) + string(global.modNoEnc) + string(global.modLang);
+if (msig != global.modSig)
+{
+    global.modSig = msig;
+    ini_open(""modknight.ini"");
+    ini_write_real(""set"", ""god"", global.modGod);
+    ini_write_real(""set"", ""knight"", global.modKnight);
+    ini_write_real(""set"", ""flame"", global.modFlame);
+    ini_write_real(""set"", ""fast"", global.modFast);
+    ini_write_real(""set"", ""deity"", global.modDeity);
+    ini_write_real(""set"", ""walk"", global.modWalk);
+    ini_write_real(""set"", ""noenc"", global.modNoEnc);
+    ini_write_real(""set"", ""lang"", global.modLang);
+    ini_close();
 }
 if (global.modGod) global.hp = global.maxhp;
 // Момент удара: полоска прицела начала исчезать (так при любом оружии) или появился разрез
@@ -173,52 +355,107 @@ if (variable_global_exists(""modMenu""))
     var s = gw / 640;
     draw_set_alpha(1);
     draw_set_font(fnt_maintext);
-    if (global.modMenu)
+    // Язык: русский рисуем своим пиксельным шрифтом
+    var fs = asset_get_index(""scr_modtext"");
+    var ru = 0;
+    if (global.modLang && fs >= 0) ru = 1;
+    if (global.modMenu && !global.modPhoto)
     {
         var px = 20 * s;
         var py = 60 * s;
-        var pw = 260 * s;
+        var pw = 300 * s;
+        var px2 = px + pw + 10 * s;
         draw_set_color(c_black);
         draw_rectangle(px, py, px + pw, py + 310 * s, false);
+        draw_rectangle(px2, py, px2 + pw, py + 255 * s, false);
         draw_set_color(c_white);
         draw_rectangle(px, py, px + pw, py + 310 * s, true);
         draw_rectangle(px + 2 * s, py + 2 * s, px + pw - 2 * s, py + 308 * s, true);
+        draw_rectangle(px2, py, px2 + pw, py + 255 * s, true);
+        draw_rectangle(px2 + 2 * s, py + 2 * s, px2 + pw - 2 * s, py + 253 * s, true);
         draw_set_color(c_yellow);
-        draw_text_transformed(px + 12 * s, py + 10 * s, ""MOD MENU  [M]"", s, s, 0);
+        if (ru) script_execute(fs, px + 12 * s, py + 10 * s + 3 * s, ""МОД-МЕНЮ [M]"", 1.5 * s);
+        else draw_text_transformed(px + 12 * s, py + 10 * s, ""MOD MENU  [M]"", s, s, 0);
+        // Кнопка языка
+        draw_set_color(make_color_rgb(40, 40, 60));
+        draw_rectangle(px + pw - 56 * s, py + 6 * s, px + pw - 8 * s, py + 32 * s, false);
+        draw_set_color(c_aqua);
+        draw_rectangle(px + pw - 56 * s, py + 6 * s, px + pw - 8 * s, py + 32 * s, true);
+        if (ru) draw_text_transformed(px + pw - 48 * s, py + 8 * s, ""EN"", s, s, 0);
+        else draw_text_transformed(px + pw - 48 * s, py + 8 * s, ""RU"", s, s, 0);
         var t1 = ""1) NOCLIP: OFF"";
+        var r1 = ""1) СКВОЗЬ СТЕНЫ: ВЫКЛ"";
         draw_set_color(c_white);
-        if (global.modNoclip) { t1 = ""1) NOCLIP: ON""; draw_set_color(c_lime); }
-        draw_text_transformed(px + 12 * s, py + 45 * s, t1, s, s, 0);
+        if (global.modNoclip) { t1 = ""1) NOCLIP: ON""; r1 = ""1) СКВОЗЬ СТЕНЫ: ВКЛ""; draw_set_color(c_lime); }
+        if (ru) script_execute(fs, px + 12 * s, py + 45 * s + 3 * s, r1, 1.5 * s);
+        else draw_text_transformed(px + 12 * s, py + 45 * s, t1, s, s, 0);
         var t2 = ""2) GOD MODE: OFF"";
+        var r2 = ""2) БЕССМЕРТИЕ: ВЫКЛ"";
         draw_set_color(c_white);
-        if (global.modGod) { t2 = ""2) GOD MODE: ON""; draw_set_color(c_lime); }
-        draw_text_transformed(px + 12 * s, py + 85 * s, t2, s, s, 0);
+        if (global.modGod) { t2 = ""2) GOD MODE: ON""; r2 = ""2) БЕССМЕРТИЕ: ВКЛ""; draw_set_color(c_lime); }
+        if (ru) script_execute(fs, px + 12 * s, py + 85 * s + 3 * s, r2, 1.5 * s);
+        else draw_text_transformed(px + 12 * s, py + 85 * s, t2, s, s, 0);
         var t4 = ""4) KNIGHT: OFF"";
+        var r4 = ""4) РЫЦАРЬ: ВЫКЛ"";
         draw_set_color(c_white);
-        if (global.modKnight) { t4 = ""4) KNIGHT: ON  [U]""; draw_set_color(c_aqua); }
-        draw_text_transformed(px + 12 * s, py + 125 * s, t4, s, s, 0);
+        if (global.modKnight) { t4 = ""4) KNIGHT: ON  [U]""; r4 = ""4) РЫЦАРЬ: ВКЛ [U]""; draw_set_color(c_aqua); }
+        if (ru) script_execute(fs, px + 12 * s, py + 125 * s + 3 * s, r4, 1.5 * s);
+        else draw_text_transformed(px + 12 * s, py + 125 * s, t4, s, s, 0);
         var t5 = ""5) FLAME: BLUE"";
-        if (global.modFlame == 1) t5 = ""5) FLAME: RED"";
-        if (global.modFlame == 2) t5 = ""5) FLAME: PURPLE"";
-        if (global.modFlame == 3) t5 = ""5) FLAME: GREEN"";
+        var r5 = ""5) ПЛАМЯ: СИНЕЕ"";
+        if (global.modFlame == 1) { t5 = ""5) FLAME: RED""; r5 = ""5) ПЛАМЯ: КРАСНОЕ""; }
+        if (global.modFlame == 2) { t5 = ""5) FLAME: PURPLE""; r5 = ""5) ПЛАМЯ: ФИОЛЕТОВОЕ""; }
+        if (global.modFlame == 3) { t5 = ""5) FLAME: GREEN""; r5 = ""5) ПЛАМЯ: ЗЕЛЁНОЕ""; }
         draw_set_color(global.modFC1);
-        draw_text_transformed(px + 12 * s, py + 165 * s, t5, s, s, 0);
+        if (ru) script_execute(fs, px + 12 * s, py + 165 * s + 3 * s, r5, 1.5 * s);
+        else draw_text_transformed(px + 12 * s, py + 165 * s, t5, s, s, 0);
         var t6 = ""6) FAST BATTLE: OFF"";
+        var r6 = ""6) БЫСТРЫЙ БОЙ: ВЫКЛ"";
         draw_set_color(c_white);
-        if (global.modFast) { t6 = ""6) FAST BATTLE: ON""; draw_set_color(c_lime); }
-        draw_text_transformed(px + 12 * s, py + 205 * s, t6, s, s, 0);
+        if (global.modFast) { t6 = ""6) FAST BATTLE: ON""; r6 = ""6) БЫСТРЫЙ БОЙ: ВКЛ""; draw_set_color(c_lime); }
+        if (ru) script_execute(fs, px + 12 * s, py + 205 * s + 3 * s, r6, 1.5 * s);
+        else draw_text_transformed(px + 12 * s, py + 205 * s, t6, s, s, 0);
         draw_set_color(c_gray);
-        draw_set_color(c_gray);
-        draw_text_transformed(px + 12 * s, py + 280 * s, ""KNIGHT WINS: "" + string(global.modKills), s, s, 0);
-        // Секретная кнопка: маленький тёмный квадрат справа внизу
+        if (ru) script_execute(fs, px + 12 * s, py + 280 * s + 3 * s, ""ПОБЕД РЫЦАРЯ: "" + string(global.modKills), 1.5 * s);
+        else draw_text_transformed(px + 12 * s, py + 280 * s, ""KNIGHT WINS: "" + string(global.modKills), s, s, 0);
+        // Секретная кнопка: маленький тёмный квадрат справа
         draw_set_color(make_color_rgb(40, 40, 40));
         if (global.modSword) draw_set_color(c_red);
         draw_rectangle(px + pw - 24 * s, py + 130 * s, px + pw - 4 * s, py + 150 * s, false);
+        // Второе окно
+        draw_set_color(c_yellow);
+        if (ru) script_execute(fs, px2 + 12 * s, py + 10 * s + 3 * s, ""ЕЩЁ"", 1.5 * s);
+        else draw_text_transformed(px2 + 12 * s, py + 10 * s, ""MORE"", s, s, 0);
+        var t8 = ""8) FAST WALK: OFF"";
+        var r8 = ""8) БЫСТРЫЙ ШАГ: ВЫКЛ"";
+        draw_set_color(c_white);
+        if (global.modWalk) { t8 = ""8) FAST WALK: ON""; r8 = ""8) БЫСТРЫЙ ШАГ: ВКЛ""; draw_set_color(c_lime); }
+        if (ru) script_execute(fs, px2 + 12 * s, py + 45 * s + 3 * s, r8, 1.5 * s);
+        else draw_text_transformed(px2 + 12 * s, py + 45 * s, t8, s, s, 0);
+        var t9 = ""9) NO BATTLES: OFF"";
+        var r9 = ""9) БЕЗ БОЁВ: ВЫКЛ"";
+        draw_set_color(c_white);
+        if (global.modNoEnc) { t9 = ""9) NO BATTLES: ON""; r9 = ""9) БЕЗ БОЁВ: ВКЛ""; draw_set_color(c_lime); }
+        if (ru) script_execute(fs, px2 + 12 * s, py + 80 * s + 3 * s, r9, 1.5 * s);
+        else draw_text_transformed(px2 + 12 * s, py + 80 * s, t9, s, s, 0);
+        draw_set_color(c_yellow);
+        if (ru) script_execute(fs, px2 + 12 * s, py + 115 * s + 3 * s, ""0) +100 ЗОЛОТА"", 1.5 * s);
+        else draw_text_transformed(px2 + 12 * s, py + 115 * s, ""0) +100 GOLD"", s, s, 0);
+        draw_set_color(c_white);
+        if (ru) script_execute(fs, px2 + 12 * s, py + 150 * s + 3 * s, ""H) ЛЕЧЕБНЫЕ ПРЕДМЕТЫ"", 1.5 * s);
+        else draw_text_transformed(px2 + 12 * s, py + 150 * s, ""H) HEALING ITEMS"", s, s, 0);
+        draw_set_color(c_aqua);
+        if (ru) script_execute(fs, px2 + 12 * s, py + 185 * s + 3 * s, ""J) МЕСТО: "" + global.modPlaceRU[global.modPlace], 1.5 * s);
+        else draw_text_transformed(px2 + 12 * s, py + 185 * s, ""J) PLACE: "" + global.modPlaceEN[global.modPlace], s, s, 0);
+        draw_set_color(c_lime);
+        if (ru) script_execute(fs, px2 + 12 * s, py + 220 * s + 3 * s, ""G) ТЕЛЕПОРТ"", 1.5 * s);
+        else draw_text_transformed(px2 + 12 * s, py + 220 * s, ""G) TELEPORT"", s, s, 0);
     }
-    if (global.modSword)
+    if (global.modSword && !global.modPhoto)
     {
         draw_set_color(c_red);
-        draw_text_transformed(gw - 90 * s, 8 * s, ""SWORD"", s, s, 0);
+        if (ru) script_execute(fs, gw - 60 * s, 10 * s, ""МЕЧ"", 1.5 * s);
+        else draw_text_transformed(gw - 90 * s, 8 * s, ""SWORD"", s, s, 0);
     }
     if (global.modStab > 0)
     {
@@ -272,7 +509,8 @@ if (variable_global_exists(""modMenu""))
             draw_circle(tx - 18 * s, ty, 8 * s * (1 - q), false);
             draw_set_alpha(1);
             draw_set_color(c_red);
-            draw_text_transformed(tx - 60 * s, ty - 70 * s, ""CRITICAL!"", s * 1.5, s * 1.5, 0);
+            if (ru) script_execute(fs, tx - 40 * s, ty - 70 * s, ""КРИТ!"", 3 * s);
+            else draw_text_transformed(tx - 60 * s, ty - 70 * s, ""CRITICAL!"", s * 1.5, s * 1.5, 0);
         }
         draw_set_alpha(1);
     }
@@ -986,7 +1224,12 @@ if (variable_global_exists(""modShield""))
         // Полоска щита
         draw_set_font(fnt_maintext);
         draw_set_color(global.modFC1);
-        draw_text_transformed(20 * ks, 12 * ks, ""SHIELD"", ks, ks, 0);
+        var kfs = asset_get_index(""scr_modtext"");
+        if (!global.modPhoto)
+        {
+            if (global.modLang && kfs >= 0) script_execute(kfs, 20 * ks, 14 * ks, ""ЩИТ"", 2 * ks);
+            else draw_text_transformed(20 * ks, 12 * ks, ""SHIELD"", ks, ks, 0);
+        }
         draw_set_color(make_color_rgb(20, 30, 50));
         draw_rectangle(110 * ks, 16 * ks, 210 * ks, 30 * ks, false);
         draw_set_color(global.modFC1);
@@ -1272,5 +1515,56 @@ if (variable_global_exists(""modIntro""))
 
 
 
+
+// ===== Версия 0.8: скрипт, который рисует русский текст своим пиксельным шрифтом =====
+group.QueueReplace("gml_Script_scr_modtext", @"
+// argument0, argument1 — где; argument2 — текст; argument3 — размер одной точки
+var tx = argument0;
+var ty = argument1;
+var str = argument2;
+var ps = argument3;
+var n = string_length(str);
+for (var i = 1; i <= n; i += 1)
+{
+    var ch = string_char_at(str, i);
+    if (ds_map_exists(global.modFont, ch))
+    {
+        var g = ds_map_find_value(global.modFont, ch);
+        for (var k = 0; k < 35; k += 1)
+        {
+            if (string_char_at(g, k + 1) == ""#"")
+            {
+                var gx = tx + (k mod 5) * ps;
+                var gy = ty + (k div 5) * ps;
+                draw_rectangle(gx, gy, gx + ps - 1, gy + ps - 1, false);
+            }
+        }
+    }
+    tx += 6 * ps;
+}
+");
+
+// ===== Версия 0.8: быстрый шаг =====
+group.QueueAppend("gml_Object_obj_mainchara_Step_0", @"
+if (variable_global_exists(""modWalk""))
+{
+    if (global.modWalk && global.interact == 0 && !global.modNoclip)
+    {
+        var wdx = (keyboard_check(vk_right) - keyboard_check(vk_left)) * 3;
+        var wdy = (keyboard_check(vk_down) - keyboard_check(vk_up)) * 3;
+        if (wdx != 0 && !place_meeting(x + wdx, y, obj_solidparent)) x += wdx;
+        if (wdy != 0 && !place_meeting(x, y + wdy, obj_solidparent)) y += wdy;
+    }
+}
+");
+
+// ===== Версия 0.8: без случайных боёв (со следующей комнаты) =====
+group.QueueAppend("gml_Script_scr_steps", @"
+if (variable_global_exists(""modNoEnc""))
+{
+    if (global.modNoEnc) steps = 999999;
+}
+");
+
 group.Import();
-ScriptMessage("Мод-меню установлено: M — меню, 4 — рыцарь, U — бросок меча, Shift — рывок, 5 — цвет пламени, 6 — быстрый бой, зажми U — сверхудар, Y — щупальце");
+ScriptMessage("Мод-меню установлено: M — меню, 4 — рыцарь, U — бросок меча, Shift — рывок, 5 — цвет пламени, 6 — быстрый бой, зажми U — сверхудар, Y — щупальце, второе окно 8/9/0/H/J/G, язык RU/EN");

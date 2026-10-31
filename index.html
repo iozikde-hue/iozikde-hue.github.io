@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Бесплатные фанатские моды: мод-меню для Undertale с Чёрным рыцарем и AIR MOD — бот для Geometry Dash, лучший для испытаний на волну.">
+<title>Кузница модов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=PT+Mono&display=swap">
+<style>
+/* Раскладка: одна узкая колонка из «боевых окон» — чёрный экран, белые толстые рамки, как в ролевой игре */
+:root {
+  --bg: #000000;
+  --fg: #ffffff;
+  --dim: #8d8a99;
+  --line: #ffffff;
+  --accent: #ff9b21;
+  --soul: #ff1f3d;
+  --flame: #5fe0ff;
+  --panel: #0b0b10;
+  --pixel: "Press Start 2P", "Courier New", monospace;
+  --text: "PT Mono", "Courier New", monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--text);
+  font-size: 17px;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 48px;
+}
+.wrap { max-width: 860px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3, .px { font-family: var(--pixel); font-weight: 400; text-wrap: balance; }
+h1 { font-size: clamp(22px, 5vw, 40px); line-height: 1.3; margin: 0; letter-spacing: 2px; }
+h2 { font-size: clamp(14px, 2.6vw, 18px); margin: 0; letter-spacing: 1px; color: var(--accent); }
+h3 { font-size: 13px; margin: 0; line-height: 1.6; }
+p { margin: 0; }
+a { color: var(--flame); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--soul); outline-offset: 3px; }
+
+.box { border: 4px solid var(--line); background: var(--panel); padding: 20px; }
+
+/* Шапка */
+header { display: grid; gap: 22px; }
+.tag { font-family: var(--pixel); font-size: 10px; color: var(--dim); letter-spacing: 2px; }
+.dialog { font-size: 19px; min-height: 5.2em; display: flex; gap: 14px; }
+.dialog .star { flex: none; }
+.cursor { display: inline-block; width: 10px; height: 18px; background: var(--fg); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Вкладки игр */
+.games { display: flex; flex-wrap: wrap; gap: 12px; }
+.game {
+  font-family: var(--pixel); font-size: 12px; letter-spacing: 1px;
+  background: var(--bg); color: var(--accent); border: 3px solid var(--accent);
+  padding: 12px 16px 12px 40px; position: relative; cursor: pointer;
+}
+.game[aria-pressed="true"]::before {
+  content: ""; position: absolute; left: 12px; top: 50%; width: 16px; height: 14px; margin-top: -7px;
+  background: var(--soul);
+  clip-path: polygon(0 20%, 25% 0, 50% 20%, 75% 0, 100% 20%, 100% 50%, 50% 100%, 0 50%);
+}
+.game[aria-pressed="true"] { color: #ffe03d; border-color: #ffe03d; }
+.game[disabled] { color: var(--dim); border-color: var(--dim); cursor: default; padding-left: 16px; }
+
+/* Карточка мода */
+.mod { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
+.mod > * { min-width: 0; }
+.stage { border: 4px solid var(--line); background: var(--bg); aspect-ratio: 1; max-width: 100%; display: grid; place-items: center; }
+.stage canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+.mod-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.free { font-family: var(--pixel); font-size: 10px; background: var(--fg); color: var(--bg); padding: 6px 8px; letter-spacing: 1px; }
+.ver { font-family: var(--pixel); font-size: 10px; color: var(--dim); }
+.mod-body { display: grid; gap: 18px; }
+.keys { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.keys li { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: baseline; }
+kbd {
+  font-family: var(--pixel); font-size: 11px; text-align: center;
+  border: 2px solid var(--fg); padding: 6px 4px; color: var(--fg);
+}
+.keys .secret kbd { border-style: dashed; color: var(--soul); border-color: var(--soul); }
+.knight-name { color: var(--flame); }
+
+/* Установка */
+.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 18px; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 40px 1fr; gap: 12px; counter-increment: s; }
+.steps li > div { min-width: 0; display: grid; gap: 8px; }
+.steps li::before { content: counter(s); font-family: var(--pixel); font-size: 14px; color: var(--accent); padding-top: 3px; }
+code, pre { font-family: var(--text); }
+.inline { background: #1a1a22; padding: 1px 6px; word-break: break-all; }
+.code-wrap { border: 4px solid var(--line); background: var(--bg); }
+.code-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 4px solid var(--line); }
+.code-bar span { font-family: var(--pixel); font-size: 10px; color: var(--dim); }
+.btn {
+  font-family: var(--pixel); font-size: 12px; letter-spacing: 1px; cursor: pointer;
+  background: var(--bg); color: var(--accent); border: 3px solid var(--accent); padding: 10px 14px;
+}
+.btn:hover { color: #ffe03d; border-color: #ffe03d; }
+pre { margin: 0; padding: 14px; max-height: 340px; overflow: auto; font-size: 13px; line-height: 1.5; color: #d9d6e6; white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: hidden; }
+.warn { border-color: var(--soul); }
+.warn h3 { color: var(--soul); }
+
+.need { border-width: 3px; border-color: var(--dim); padding: 14px; display: grid; gap: 6px; }
+.need h3 { color: var(--dim); font-size: 11px; }
+.note { color: var(--dim); font-size: 15px; }
+.dl { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.btn.big { text-decoration: none; display: inline-block; font-size: 13px; padding: 14px 18px; color: #ffe03d; border-color: #ffe03d; }
+.btn[disabled] { color: var(--dim); border-color: var(--dim); cursor: default; }
+.beta { font-family: var(--pixel); font-size: 9px; color: var(--soul); border: 2px solid var(--soul); padding: 2px 5px; vertical-align: 2px; white-space: nowrap; }
+.wave { font-family: var(--pixel); font-size: 11px; line-height: 1.8; color: #ffe03d; border-left: 4px solid #ffe03d; padding-left: 12px; }
+.soon { border-style: dashed; border-color: var(--dim); color: var(--dim); display: grid; gap: 10px; }
+
+footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top: 4px solid var(--line); padding-top: 20px; }
+
+@media (max-width: 620px) {
+  .mod { grid-template-columns: 1fr; }
+  .stage { width: 200px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor { animation: none; }
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">ФАНАТСКИЕ МОДЫ</span>
+    <h1>КУЗНИЦА<br>МОДОВ</h1>
+    <div class="box dialog" aria-live="polite">
+      <span class="star">*</span>
+      <p><span id="typed"></span><span class="cursor" aria-hidden="true"></span></p>
+    </div>
+  </header>
+
+  <nav class="games" aria-label="Игры">
+    <button class="game" aria-pressed="true" type="button" data-show="ut">UNDERTALE</button>
+    <button class="game" aria-pressed="false" type="button" data-show="gd">GEOMETRY DASH</button>
+  </nav>
+
+  <section class="box mod" aria-labelledby="m1" data-game="ut">
+    <div class="stage"><canvas id="knight" width="64" height="64" aria-label="Чёрный рыцарь с голубыми мечами"></canvas></div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h2 id="m1">МОД-МЕНЮ</h2>
+        <span class="free">БЕСПЛАТНО</span>
+        <span class="ver">ВЕРСИЯ 0.3 · ПРОБНАЯ</span>
+      </div>
+      <p>Меню прямо в игре. Ходи сквозь стены, не получай урон и стань <span class="knight-name">Чёрным рыцарем</span> с голубым пламенем в глазах, щупальцами за спиной и двумя летающими мечами.</p>
+      <ul class="keys">
+        <li><kbd>M</kbd><span>открыть меню (на русской раскладке — Ь)</span></li>
+        <li><kbd>1</kbd><span>сквозь стены. Ещё можно включать на N</span></li>
+        <li><kbd>2</kbd><span>бессмертие: здоровье всегда полное</span></li>
+        <li><kbd>4</kbd><span>Чёрный рыцарь вместо героя</span></li>
+        <li><kbd>U</kbd><span>рыцарь бросает летающий меч</span></li>
+        <li class="secret"><kbd>?</kbd><span>в меню спрятана секретная кнопка. Найдёшь — враги будут падать с одного удара</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="box" aria-labelledby="inst" style="display:grid;gap:22px" data-game="ut">
+    <h2 id="inst">КАК УСТАНОВИТЬ</h2>
+    <ol class="steps">
+      <li><div>
+        <h3>Нужна своя игра</h3>
+        <p>Мод ставится в купленную копию Undertale. Самой игры здесь нет.</p>
+      </div></li>
+      <li><div>
+        <h3>Сделай запасную копию</h3>
+        <p>Скопируй файл игры в отдельную папку. На Маке это <code class="inline">UNDERTALE.app/Contents/Resources/game.ios</code>, на Виндовс это <code class="inline">data.win</code> в папке игры.</p>
+      </div></li>
+      <li><div>
+        <h3>Скачай программу для модов</h3>
+        <p>Бесплатная UndertaleModTool: <a href="https://github.com/UnderminersTeam/UndertaleModTool/releases" target="_blank" rel="noopener">страница загрузки</a>.</p>
+      </div></li>
+      <li><div>
+        <h3>Сохрани код мода</h3>
+        <p>Нажми «Скопировать» ниже и сохрани текст в файл <code class="inline">mod.csx</code> или <a href="undertale-mod-menu.csx" download="mod.csx">скачай файл</a>.</p>
+      </div></li>
+      <li><div>
+        <h3>Запусти мод</h3>
+        <p>Открой файл игры в программе, выбери в меню «Scripts» пункт «Run other script…», укажи <code class="inline">mod.csx</code> и сохрани игру. На Маке можно через терминал:</p>
+        <p><code class="inline">./UndertaleModCli load game.ios --scripts mod.csx --output game_new.ios</code></p>
+      </div></li>
+    </ol>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span id="lines">КОД МОДА</span>
+        <button class="btn" id="copy" type="button">СКОПИРОВАТЬ</button>
+      </div>
+      <pre id="code" tabindex="0">Загружаю код…</pre>
+    </div>
+
+    <div class="box warn">
+      <h3>* ВНИМАНИЕ</h3>
+      <p>Проверено только на Маке, в версии из Стима. Ставь мод всегда на чистую игру из запасной копии, а не поверх старого мода.</p>
+    </div>
+  </section>
+
+  <section class="box mod" aria-labelledby="m2" data-game="gd" hidden>
+    <div class="stage"><canvas id="cube" width="96" height="96" aria-label="Кубик прыгает по рассчитанной траектории"></canvas></div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h2 id="m2">AIR MOD</h2>
+        <span class="ver">ВЕРСИЯ 1.0 · ТОЛЬКО МАК</span>
+      </div>
+      <p class="wave">Лучше всего для испытаний на волну</p>
+      <p>Бот, который <span class="knight-name">сам проходит уровни</span>. Он считает физику игры и заранее прокладывает путь через весь уровень, а на экране рисует траекторию и хитбоксы.</p>
+      <ul class="keys">
+        <li><kbd>=</kbd><span>открыть меню бота внутри уровня</span></li>
+        <li><kbd>RU</kbd><span>кнопка в меню слева внизу: русский или английский язык</span></li>
+      </ul>
+      <p>В узких коридорах он часто и точно жмёт, чтобы держаться середины, и проходит даже маленькую волну, коридоры с движущимися стенами и наклонные блоки.</p>
+      <p>Также умеет: кубик, корабль, НЛО, батуты, порталы гравитации и размера.</p>
+      <p>Пробная версия: паук <span class="beta">БЕТА</span>, шар <span class="beta">БЕТА</span>, прыжковые кольца <span class="beta">БЕТА</span>. Работают, но бот на них иногда ошибается.</p>
+      <p>Пока не умеет: робот и качели.</p>
+      <div class="box need">
+        <h3>НУЖНО</h3>
+        <p>Geometry Dash 2.2081 для Мака и загрузчик модов Geode 5.9.</p>
+      </div>
+      <div class="dl">
+        <a class="btn big" id="dl-gd" href="AIR-mod.zip" download>СКАЧАТЬ AIR MOD</a>
+        <span class="ver" id="dl-gd-msg">ZIP · 0,7 МБ</span>
+      </div>
+      <p class="note">Мод для тренировки и для интереса: не выдавай прохождения бота за свои рекорды.</p>
+    </div>
+  </section>
+
+  <section class="box" aria-labelledby="inst2" style="display:grid;gap:22px" data-game="gd" hidden>
+    <h2 id="inst2">КАК УСТАНОВИТЬ</h2>
+    <ol class="steps">
+      <li><div>
+        <h3>Поставь Geode</h3>
+        <p>Это бесплатный загрузчик модов: <a href="https://geode-sdk.org" target="_blank" rel="noopener">сайт Geode</a>. Нужна версия 5.9 и Geometry Dash 2.2081 из Стима на Маке.</p>
+      </div></li>
+      <li><div>
+        <h3>Скачай и распакуй</h3>
+        <p>Нажми «Скачать AIR MOD» и открой архив двойным нажатием. Внутри файл <code class="inline">demid.gdaibridge.geode</code>.</p>
+      </div></li>
+      <li><div>
+        <h3>Открой папку модов</h3>
+        <p>В Стиме нажми правой кнопкой на Geometry Dash → «Управление» → «Просмотреть локальные файлы». Нажми правой кнопкой на <code class="inline">Geometry Dash.app</code> → «Показать содержимое пакета» и открой <code class="inline">Contents/geode/mods</code>.</p>
+      </div></li>
+      <li><div>
+        <h3>Перетащи мод</h3>
+        <p>Перетащи файл <code class="inline">demid.gdaibridge.geode</code> в эту папку и запусти игру заново.</p>
+      </div></li>
+      <li><div>
+        <h3>Играй</h3>
+        <p>Зайди в любой уровень и нажми <kbd>=</kbd>, чтобы открыть меню бота. На длинных уровнях боту нужно несколько секунд, чтобы проложить путь.</p>
+      </div></li>
+    </ol>
+    <div class="box warn">
+      <h3>* ВНИМАНИЕ</h3>
+      <p>Мод проверен только на одном Маке. На Виндовс и телефонах он не работает. Чтобы удалить мод, убери файл из папки модов.</p>
+    </div>
+  </section>
+
+  <section class="box soon">
+    <h3>* СЛОТ ПУСТ</h3>
+    <p>Здесь появятся новые моды для других игр. Следи за обновлениями.</p>
+  </section>
+
+  <footer>
+    <p>Моды сделаны фанатом. Undertale и всё в ней принадлежат автору игры.</p>
+    <p>Используешь мод — сам отвечаешь за свои сохранения. Делай запасные копии.</p>
+  </footer>
+</div>
+
+<script>
+// Печать текста в окне, как в диалоге
+(function () {
+  var lines = ["Ты попал в кузницу модов.", "Первый мод — в подарок.", "Чёрный рыцарь ждёт тебя."];
+  var el = document.getElementById("typed");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) { el.textContent = lines.join(" "); return; }
+  var li = 0, ci = 0;
+  function tick() {
+    var t = lines[li];
+    if (ci <= t.length) { el.textContent = t.slice(0, ci++); setTimeout(tick, 45); }
+    else { setTimeout(function () { li = (li + 1) % lines.length; ci = 0; tick(); }, 2200); }
+  }
+  el.textContent = lines[0];
+  setTimeout(function () { ci = 0; tick(); }, 1500);
+})();
+
+// Рыцарь на холсте — тот же рисунок, что и в моде
+(function () {
+  var FRONT = ["..H........H..", "..gH......Hg..", "...gKKKKKKg...", "...KGGGGGGK...", "...KGHGGHGK...", "...KgKKKKgK...", "...KKEKKEKK...", "...KgKKKKgK...", "....KgGGgK....", "..KKKKKKKKKK..", ".KGHGKRRKGHGK.", "KGGGKRRRRKGGGK", "KgKKRRGGRRKKgK", "KgKRRGHHGRRKgK", "KgKRRRGGRRRKgK", "KGKRRRRRRRRKGK", "KgKgGGGGGGgKgK", ".KKRRRRRRRRKK.", "...KGGKKGGK...", "...KGHKKHGK...", "...KrrKKrrK...", "...KGGKKGGK...", "....KGKKGK....", "....KGKKGK....", ".....K..K....."];
+  var SWORD = ["..W..", ".WCW."];
+  for (var i = 0; i < 13; i++) SWORD.push(".CBC.");
+  SWORD = SWORD.concat(["KRRRK", "..g..", "..g..", "..g..", ".KRK."]);
+  // Контур чуть светлее, чтобы чёрные доспехи было видно на чёрном фоне
+  var COL = { K: "#3a3646", R: "#1e1e26", r: "#121218", G: "#3a3c46", g: "#26272f", H: "#6e7380", E: "#5ad2ff", W: "#ffffff", C: "#5fe0ff", B: "#1e8cff" };
+  var cv = document.getElementById("knight"), g = cv.getContext("2d");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function px(x, y, c) { g.fillStyle = c; g.fillRect(Math.round(x), Math.round(y), 1, 1); }
+  function sprite(rows, ox, oy) {
+    for (var r = 0; r < rows.length; r++)
+      for (var c = 0; c < rows[r].length; c++) {
+        var ch = rows[r][c];
+        if (ch !== ".") px(ox + c, oy + r, COL[ch]);
+      }
+  }
+  var ANG = [205, 160, 125, 55, 20, -25];
+  function frame(t) {
+    g.clearRect(0, 0, 64, 64);
+    var hv = Math.round(Math.sin(t / 350) * 2);
+    var bx = 25, by = 18 + hv, cx = 32;
+    // тень
+    g.fillStyle = "rgba(95,224,255,0.12)";
+    g.fillRect(cx - 6 + hv, 52, 12 - hv * 2, 2);
+    // щупальца
+    for (var ti = 0; ti < 6; ti++)
+      for (var s = 0; s < 16; s++) {
+        var wav = Math.sin(t / 220 + ti * 1.7 + s * 0.45) * s * 0.35;
+        var a = ANG[ti] * Math.PI / 180, p = a + Math.PI / 2;
+        var x = cx + Math.cos(a) * s + Math.cos(p) * wav;
+        var y = by + 12 - Math.sin(a) * s - Math.sin(p) * wav;
+        var th = s < 9 ? 2 : 1;
+        g.fillStyle = "#1c1428"; g.fillRect(Math.round(x), Math.round(y), th, th);
+        if (th === 2) px(x, y, "#3a2a58");
+      }
+    // пламя под ногами
+    for (var f = 0; f < 4; f++) px(cx - 3 + Math.random() * 6, by + 25 + Math.random() * 4, ["#5fe0ff", "#1e8cff", "#ffffff"][f % 3]);
+    sprite(FRONT, bx, by);
+    // пламя из глаз
+    [5, 8].forEach(function (c) {
+      if (Math.random() < 0.7) px(bx + c, by + 5, "#96ebff");
+      if (Math.random() < 0.4) px(bx + c + Math.floor(Math.random() * 3) - 1, by + 4, "#5fe0ff");
+    });
+    // мечи
+    var sb = Math.round(Math.sin(t / 300) * 2);
+    sprite(SWORD, bx - 8, by - 1 + sb);
+    sprite(SWORD, bx + 17, by - 1 - sb);
+    for (var k = 0; k < 4; k++) {
+      px(bx - 8 + (k % 2) * 4, by - 1 + sb + Math.random() * 14, "#5fe0ff");
+      px(bx + 17 + (k % 2) * 4, by - 1 - sb + Math.random() * 14, "#5fe0ff");
+    }
+  }
+  function loop(t) { frame(t); requestAnimationFrame(loop); }
+  if (reduce) frame(0); else requestAnimationFrame(loop);
+})();
+
+// Вкладки игр
+(function () {
+  var tabs = document.querySelectorAll(".game");
+  tabs.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tabs.forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+      document.querySelectorAll("[data-game]").forEach(function (s) { s.hidden = s.dataset.game !== b.dataset.show; });
+    });
+  });
+})();
+
+// Кубик бота: прыгает через шипы, впереди точками видно рассчитанный путь
+(function () {
+  var cv = document.getElementById("cube"), g = cv.getContext("2d");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var GROUND = 70, SP = 1.2, PERIOD = 60;
+  function jumpY(px) {
+    // прыжок над каждым шипом: парабола высотой 26
+    var p = ((px % PERIOD) + PERIOD) % PERIOD;
+    var a = 18, len = 34;
+    if (p < a || p > a + len) return 0;
+    var u = (p - a) / len;
+    return 26 * 4 * u * (1 - u);
+  }
+  function frame(t) {
+    var off = (t / 16) * SP;
+    g.fillStyle = "#000"; g.fillRect(0, 0, 96, 96);
+    g.fillStyle = "#ffffff"; g.fillRect(0, GROUND, 96, 2);
+    // шипы
+    for (var k = -1; k < 4; k++) {
+      var sx = Math.round(k * PERIOD + 45 - (off % PERIOD));
+      g.fillStyle = "#ff1f3d";
+      for (var h = 0; h < 10; h++) g.fillRect(sx + h / 2, GROUND - h, 10 - h, 1);
+    }
+    // путь бота
+    for (var d = 0; d < 60; d += 4) {
+      var y = GROUND - 10 - jumpY(off + d);
+      g.fillStyle = "#5fe0ff"; g.fillRect(20 + d, Math.round(y) + 4, 2, 2);
+    }
+    // кубик
+    var cy = Math.round(GROUND - 10 - jumpY(off));
+    g.fillStyle = "#ff9b21"; g.fillRect(15, cy - 1, 11, 11);
+    g.fillStyle = "#000"; g.fillRect(18, cy + 2, 5, 5);
+    g.fillStyle = "#ffe03d"; g.fillRect(19, cy + 3, 3, 3);
+    // хитбокс
+    g.strokeStyle = "#5fe0ff"; g.lineWidth = 1; g.strokeRect(14.5, cy - 1.5, 12, 12);
+  }
+  function loop(t) { frame(t); requestAnimationFrame(loop); }
+  if (reduce) frame(0); else requestAnimationFrame(loop);
+})();
+
+// Код мода и кнопка «Скопировать»
+(function () {
+  var pre = document.getElementById("code"), btn = document.getElementById("copy"), lines = document.getElementById("lines");
+  var text = "";
+  fetch("undertale-mod-menu.csx").then(function (r) {
+    if (!r.ok) throw new Error();
+    return r.text();
+  }).then(function (t) {
+    text = t; pre.textContent = t;
+    lines.textContent = "MOD.CSX · " + t.split("\n").length + " СТРОК";
+  }).catch(function () {
+    pre.textContent = "Код не загрузился. Обнови страницу.";
+  });
+  function selectCode() {
+    var r = document.createRange(); r.selectNodeContents(pre);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+  btn.addEventListener("click", function () {
+    if (!text) return;
+    var done = function () { btn.textContent = "СКОПИРОВАНО"; setTimeout(function () { btn.textContent = "СКОПИРОВАТЬ"; }, 1800); };
+    try {
+      navigator.clipboard.writeText(text).then(done, function () { selectCode(); btn.textContent = "НАЖМИ ⌘C"; });
+    } catch (e) { selectCode(); btn.textContent = "НАЖМИ ⌘C"; }
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -118,6 +118,12 @@ pre { margin: 0; padding: 14px; max-height: 340px; overflow: auto; font-size: 13
 .support { border-color: #ffe03d; display: grid; gap: 14px; }
 .support h3 { color: #ffe03d; }
 
+.log { border-top: 3px solid var(--line); padding-top: 12px; }
+.log summary { font-family: var(--pixel); font-size: 11px; color: var(--accent); cursor: pointer; }
+.log-list { display: grid; gap: 12px; margin-top: 12px; }
+.log b { font-family: var(--pixel); font-size: 11px; color: #ffe03d; }
+.log ul { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+
 footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top: 4px solid var(--line); padding-top: 20px; }
 
 @media (max-width: 620px) {
@@ -152,17 +158,43 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       <div class="mod-head">
         <h2 id="m1">МОД-МЕНЮ</h2>
         <span class="free">БЕСПЛАТНО</span>
-        <span class="ver">ВЕРСИЯ 0.3 · ПРОБНАЯ</span>
+        <span class="ver">ВЕРСИЯ 0.4 · ПРОБНАЯ</span>
       </div>
       <p>Меню прямо в игре. Ходи сквозь стены, не получай урон и стань <span class="knight-name">Чёрным рыцарем</span> с голубым пламенем в глазах, щупальцами за спиной и двумя летающими мечами.</p>
       <ul class="keys">
         <li><kbd>M</kbd><span>открыть меню (на русской раскладке — Ь)</span></li>
         <li><kbd>1</kbd><span>сквозь стены. Ещё можно включать на N</span></li>
-        <li><kbd>2</kbd><span>бессмертие: здоровье всегда полное</span></li>
+        <li><kbd>2</kbd><span>бессмертие: здоровье всегда полное, даже у Флауи</span></li>
         <li><kbd>4</kbd><span>Чёрный рыцарь вместо героя</span></li>
         <li><kbd>U</kbd><span>рыцарь бросает летающий меч</span></li>
+        <li><kbd>⚔</kbd><span>в бою рыцарь: своя душа, щит и удар щупальцами</span></li>
         <li class="secret"><kbd>?</kbd><span>в меню спрятана секретная кнопка. Найдёшь — враги будут падать с одного удара</span></li>
       </ul>
+      <details class="log">
+        <summary>ЧТО НОВОГО</summary>
+        <div class="log-list">
+          <div><b>0.4</b>
+            <ul>
+              <li>Добавлено: в бою у рыцаря своя душа — чёрная с голубой обводкой.</li>
+              <li>Добавлено: щит рыцаря (полоска SHIELD). Сначала урон забирает щит, потом здоровье.</li>
+              <li>Добавлено: удар щупальцами — при каждой атаке ещё +20 урона.</li>
+              <li>Исправлено: бессмертие теперь работает и в последнем бою с Флауи.</li>
+            </ul>
+          </div>
+          <div><b>0.3</b>
+            <ul>
+              <li>Рыцарь стал худым, чёрным и парит над землёй.</li>
+              <li>Добавлено: чёрные щупальца за спиной, мечи стали длиннее.</li>
+              <li>Исправлено: пропали щели между пикселями.</li>
+            </ul>
+          </div>
+          <div><b>0.1–0.2</b>
+            <ul>
+              <li>Меню, сквозь стены, бессмертие, Чёрный рыцарь, бросок меча и секретная кнопка.</li>
+            </ul>
+          </div>
+        </div>
+      </details>
     </div>
   </section>
 

@@ -1,4 +1,4 @@
-// Мод-меню для Undertale.
+// Мод-меню для Undertale. Версия 0.4
 // M (или русская Ь) — открыть/закрыть меню. 1 — ноуклип, 2 — бессмертие,
 // маленькая кнопка справа в меню — секретный меч (босс с одного удара).
 EnsureDataLoaded();
@@ -625,5 +625,197 @@ if (variable_global_exists(""modKnight""))
 }
 ");
 
+// ===== Режим «Рыцарь» в бою: своя душа, щит и удар щупальцами =====
+group.QueueAppend("gml_Object_obj_time_Step_1", @"
+if (variable_global_exists(""modKnight""))
+{
+    if (!variable_global_exists(""modShield""))
+    {
+        global.modShield = 20;
+        global.modLastHP = global.hp;
+        global.modCalm = 0;
+        global.modKHit = 0;
+        global.modKX = 320;
+        global.modKY = 120;
+    }
+    if (global.modKnight && instance_exists(obj_heart))
+    {
+        // Щит: забирает урон на себя, пока не кончится
+        if (global.hp < global.modLastHP)
+        {
+            var kdmg = global.modLastHP - global.hp;
+            var kabs = min(global.modShield, kdmg);
+            global.hp += kabs;
+            global.modShield -= kabs;
+            global.modCalm = 0;
+        }
+        // Щит медленно восстанавливается, если долго не получать урон
+        global.modCalm += 1;
+        if (global.modCalm > 90 && (global.modCalm mod 20) == 0 && global.modShield < 20) global.modShield += 1;
+        // Удар щупальцами: при каждой атаке врагу прилетает ещё 20 урона
+        var khit = instance_exists(obj_slice);
+        if (instance_exists(obj_target))
+        {
+            if (obj_target.fade == 1) khit = 1;
+        }
+        if (khit && global.modKHit <= 0 && !global.modSword)
+        {
+            var km = array_length_1d(global.monsterinstance);
+            var kfound = 0;
+            for (var kj = 0; kj < km; kj += 1)
+            {
+                if (!kfound && instance_exists(global.monsterinstance[kj]))
+                {
+                    kfound = 1;
+                    if (global.monsterhp[kj] > 1) global.monsterhp[kj] = max(1, global.monsterhp[kj] - 20);
+                    global.modKX = (global.monsterinstance[kj].bbox_left + global.monsterinstance[kj].bbox_right) / 2;
+                    global.modKY = (global.monsterinstance[kj].bbox_top + global.monsterinstance[kj].bbox_bottom) / 2;
+                }
+            }
+            global.modKHit = 90;
+        }
+    }
+    else
+    {
+        // Вне боя щит снова полный
+        global.modShield = 20;
+        global.modCalm = 0;
+    }
+    if (global.modKHit > 0) global.modKHit -= 1;
+    global.modLastHP = global.hp;
+}
+");
+
+group.QueueAppend("gml_Object_obj_time_Draw_64", @"
+if (variable_global_exists(""modShield""))
+{
+    if (global.modKnight && instance_exists(obj_heart))
+    {
+        var kgw = display_get_gui_width();
+        var kgh = display_get_gui_height();
+        var ks = kgw / 640;
+        var kvw = view_wview[0];
+        if (kvw <= 0) kvw = 640;
+        var kvh = view_hview[0];
+        if (kvh <= 0) kvh = 480;
+        var kkx = kgw / kvw;
+        var kky = kgh / kvh;
+        // Душа рыцаря: чёрная с голубой обводкой
+        with (obj_heart)
+        {
+            if (visible)
+            {
+                var hx = (x - view_xview[0]) * kkx;
+                var hy = (y - view_yview[0]) * kky;
+                d3d_set_fog(true, make_color_rgb(90, 210, 255), 0, 0);
+                draw_sprite_ext(sprite_index, image_index, hx - kkx, hy, kkx, kky, 0, c_white, 1);
+                draw_sprite_ext(sprite_index, image_index, hx + kkx, hy, kkx, kky, 0, c_white, 1);
+                draw_sprite_ext(sprite_index, image_index, hx, hy - kky, kkx, kky, 0, c_white, 1);
+                draw_sprite_ext(sprite_index, image_index, hx, hy + kky, kkx, kky, 0, c_white, 1);
+                d3d_set_fog(true, make_color_rgb(8, 6, 14), 0, 0);
+                draw_sprite_ext(sprite_index, image_index, hx, hy, kkx, kky, 0, c_white, 1);
+                d3d_set_fog(false, c_black, 0, 0);
+            }
+        }
+        // Полоска щита
+        draw_set_font(fnt_maintext);
+        draw_set_color(c_aqua);
+        draw_text_transformed(20 * ks, 12 * ks, ""SHIELD"", ks, ks, 0);
+        draw_set_color(make_color_rgb(20, 30, 50));
+        draw_rectangle(110 * ks, 16 * ks, 210 * ks, 30 * ks, false);
+        draw_set_color(make_color_rgb(90, 210, 255));
+        if (global.modShield > 0) draw_rectangle(110 * ks, 16 * ks, (110 + global.modShield * 5) * ks, 30 * ks, false);
+        draw_set_color(c_white);
+        draw_rectangle(110 * ks, 16 * ks, 210 * ks, 30 * ks, true);
+        // Щупальца бьют во врага
+        if (global.modKHit > 50)
+        {
+            var kt = (90 - global.modKHit) / 40;
+            var ktx = (global.modKX - view_xview[0]) * kkx;
+            var kty = (global.modKY - view_yview[0]) * kky;
+            var kp = min(1, kt * 2.5);
+            for (var kn = 0; kn < 3; kn += 1)
+            {
+                var ksx = kgw * (0.25 + kn * 0.25);
+                var ksy = kgh;
+                for (var kq = 0; kq < 24; kq += 1)
+                {
+                    var kf = kq / 24 * kp;
+                    var kwav = sin(current_time / 90 + kn * 2 + kq * 0.6) * 14 * ks * (1 - kf);
+                    var kpx = ksx + (ktx - ksx) * kf + kwav;
+                    var kpy = ksy + (kty - ksy) * kf;
+                    var krad = (9 - kq * 0.3) * ks;
+                    draw_set_color(make_color_rgb(8, 6, 14));
+                    draw_circle(kpx, kpy, krad, false);
+                    draw_set_color(make_color_rgb(60, 40, 90));
+                    draw_circle(kpx - krad * 0.3, kpy - krad * 0.3, krad * 0.35, false);
+                }
+            }
+            if (kp >= 1)
+            {
+                draw_set_alpha(max(0, 1 - (kt - 0.4) * 2));
+                draw_set_color(c_aqua);
+                draw_text_transformed(ktx - 40 * ks, kty - 60 * ks, ""+20"", ks * 1.5, ks * 1.5, 0);
+                draw_set_alpha(1);
+            }
+        }
+        draw_set_color(c_white);
+    }
+}
+");
+
+// ===== Бессмертие везде, даже в последнем бою с Флауи =====
+// Урон не проходит, а проигрыш отменяется, даже если меню в этом бою не работает
+group.QueuePrepend("gml_Script_scr_damagestandard", @"
+if (variable_global_exists(""modGod""))
+{
+    if (global.modGod)
+    {
+        global.hp = global.maxhp;
+        exit;
+    }
+}
+");
+group.QueuePrepend("gml_Script_scr_gameover", @"
+if (variable_global_exists(""modGod""))
+{
+    if (global.modGod)
+    {
+        global.hp = global.maxhp;
+        exit;
+    }
+}
+");
+group.QueuePrepend("gml_Script_scr_gameoverb", @"
+if (variable_global_exists(""modGod""))
+{
+    if (global.modGod)
+    {
+        global.hp = global.maxhp;
+        exit;
+    }
+}
+");
+group.QueuePrepend("gml_Object_obj_heart_Step_0", @"
+if (variable_global_exists(""modGod""))
+{
+    if (global.modGod) global.hp = global.maxhp;
+}
+");
+
+// В последнем бою с Флауи здоровье хранится отдельно (global.my_hp) — его пули просто не ранят
+group.QueuePrepend("gml_Object_obj_floweybullet_parent_Collision_1587", @"
+if (variable_global_exists(""modGod""))
+{
+    if (global.modGod) exit;
+}
+");
+group.QueuePrepend("gml_Object_obj_floweybullet_parent_Other_22", @"
+if (variable_global_exists(""modGod""))
+{
+    if (global.modGod) exit;
+}
+");
+
 group.Import();
-ScriptMessage("Мод-меню установлено: M — меню, 4 — рыцарь, U — бросок меча");
+ScriptMessage("Мод-меню установлено: M — меню, 4 — рыцарь, U — бросок меча, в бою у рыцаря душа, щит и щупальца");

@@ -1,6 +1,7 @@
-// Мод-меню для Undertale. Версия 0.8
+// Мод-меню для Undertale. Версия 1.0
 // M (или русская Ь) — открыть/закрыть меню. 1 — ноуклип, 2 — бессмертие,
 // маленькая кнопка справа в меню — секретный меч (босс с одного удара).
+// 7 — Священный рыцарь (HOLY KNIGHT), T — его тёмная вспышка.
 EnsureDataLoaded();
 
 var group = new UndertaleModLib.Compiler.CodeImportGroup(Data);
@@ -251,6 +252,27 @@ if (global.modMenu)
     if (keyboard_check_pressed(ord(""3""))) global.modSword = !global.modSword;
     if (keyboard_check_pressed(ord(""5""))) global.modFlame = (global.modFlame + 1) mod 4;
     if (keyboard_check_pressed(ord(""6""))) global.modFast = !global.modFast;
+    // DEITY-START
+    var deityKey = keyboard_check_pressed(ord(""7""));
+    if (mouse_check_button_pressed(mb_left))
+    {
+        if (mx > px && mx < px + 240 * s && my > py + 240 * s && my < py + 270 * s) deityKey = 1;
+    }
+    if (deityKey)
+    {
+        global.modDeity = !global.modDeity;
+        if (global.modDeity)
+        {
+            global.modKnight = 0;
+            // Низкий звук при появлении
+            var dvs = asset_get_index(""snd_rumble"");
+            if (dvs < 0) dvs = asset_get_index(""snd_impact"");
+            if (dvs < 0) dvs = asset_get_index(""snd_power"");
+            if (dvs >= 0) snd_play(dvs);
+        }
+        if (!global.modDeity && instance_exists(obj_mainchara)) obj_mainchara.visible = 1;
+    }
+    // DEITY-END
     if (keyboard_check_pressed(ord(""4"")))
     {
         global.modKnight = !global.modKnight;
@@ -415,6 +437,14 @@ if (variable_global_exists(""modMenu""))
         if (global.modFast) { t6 = ""6) FAST BATTLE: ON""; r6 = ""6) БЫСТРЫЙ БОЙ: ВКЛ""; draw_set_color(c_lime); }
         if (ru) script_execute(fs, px + 12 * s, py + 205 * s + 3 * s, r6, 1.5 * s);
         else draw_text_transformed(px + 12 * s, py + 205 * s, t6, s, s, 0);
+        // DEITY-START
+        var t7 = ""7) HOLY KNIGHT: OFF"";
+        var r7 = ""7) СВЯЩ. РЫЦАРЬ: ВЫКЛ"";
+        draw_set_color(c_white);
+        if (global.modDeity) { t7 = ""7) HOLY KNIGHT: ON""; r7 = ""7) СВЯЩ. РЫЦАРЬ: ВКЛ""; draw_set_color(make_color_rgb(230, 190, 60)); }
+        if (ru) script_execute(fs, px + 12 * s, py + 245 * s + 3 * s, r7, 1.5 * s);
+        else draw_text_transformed(px + 12 * s, py + 245 * s, t7, s, s, 0);
+        // DEITY-END
         draw_set_color(c_gray);
         if (ru) script_execute(fs, px + 12 * s, py + 280 * s + 3 * s, ""ПОБЕД РЫЦАРЯ: "" + string(global.modKills), 1.5 * s);
         else draw_text_transformed(px + 12 * s, py + 280 * s, ""KNIGHT WINS: "" + string(global.modKills), s, s, 0);
@@ -1510,10 +1540,722 @@ if (variable_global_exists(""modIntro""))
 }
 ");
 
+// DEITY-START
+// ===== Священный рыцарь: огромный левитирующий боец с 15 мечами (7 в меню) =====
+group.QueuePrepend("gml_Object_obj_mainchara_Draw_0", @"
+if (variable_global_exists(""modDeity""))
+{
+    if (global.modDeity)
+    {
+        // Куда смотрит — по движению героя
+        var dmx = x - xprevious;
+        var dmy = y - yprevious;
+        if (abs(dmx) + abs(dmy) > 0.1)
+        {
+            if (abs(dmx) > abs(dmy))
+            {
+                if (dmx > 0) global.modFace = 2; else global.modFace = 3;
+            }
+            else
+            {
+                if (dmy > 0) global.modFace = 0; else global.modFace = 1;
+            }
+        }
+        var dkf = global.modFace;
+        var dv;
+        if (dkf == 0)
+        {
+            dv[0] = ""..OOo....oOO.."";
+            dv[1] = "".OoOOo..oOOoO."";
+            dv[2] = ""Oo.oOKhhKOo.oO"";
+            dv[3] = ""O..OKhSShKO..O"";
+            dv[4] = ""Oo.oKSSSSKo.oO"";
+            dv[5] = "".OooKsKKsKooO."";
+            dv[6] = ""..OoKRKKRKoO.."";
+            dv[7] = ""...oKsSSsKo..."";
+            dv[8] = ""....KssssK...."";
+            dv[9] = "".....KKKK....."";
+            dv[10] = "".KKKKKssKKKKK."";
+            dv[11] = ""KhSSKLMMLKSShK"";
+            dv[12] = ""KSSsKMMMMKsSSK"";
+            dv[13] = ""KLMKLMmmMLKMLK"";
+            dv[14] = ""KMLKMmKKmMKLMK"";
+            dv[15] = "".KMKKMKKMKKMK."";
+            dv[16] = "".KMKMmKKmMKMK."";
+            dv[17] = "".KhKKYYYYKKhK."";
+            dv[18] = ""..K.KyRRyK.K.."";
+            dv[19] = ""....KDPPDK...."";
+            dv[20] = ""....KDddDK...."";
+            dv[21] = ""...KDdPPdDK..."";
+            dv[22] = ""...KdDddDdK..."";
+            dv[23] = ""....KdKKdK...."";
+            dv[24] = "".....KddK....."";
+            dv[25] = ""......dd......"";
+        }
+        else if (dkf == 1)
+        {
+            dv[0] = ""..OOo....oOO.."";
+            dv[1] = "".OoOOo..oOOoO."";
+            dv[2] = ""Oo.oOKhhKOo.oO"";
+            dv[3] = ""O..OKhSShKO..O"";
+            dv[4] = ""Oo.oKSSSSKo.oO"";
+            dv[5] = "".OooKSSSSKooO."";
+            dv[6] = ""..OoKsSSsKoO.."";
+            dv[7] = ""...oKSssSKo..."";
+            dv[8] = ""....KssssK...."";
+            dv[9] = "".....KKKK....."";
+            dv[10] = "".KKKKKssKKKKK."";
+            dv[11] = ""KhSSKMMMMKSShK"";
+            dv[12] = ""KSSsKMMMMKsSSK"";
+            dv[13] = ""KMMKMMmmMMKMMK"";
+            dv[14] = ""KMMKMmKKmMKMMK"";
+            dv[15] = "".KMKKMKKMKKMK."";
+            dv[16] = "".KMKMmKKmMKMK."";
+            dv[17] = "".KhKKYYYYKKhK."";
+            dv[18] = ""..K.KyyyyK.K.."";
+            dv[19] = ""....KDPPDK...."";
+            dv[20] = ""....KDddDK...."";
+            dv[21] = ""...KDdPPdDK..."";
+            dv[22] = ""...KdDddDdK..."";
+            dv[23] = ""....KdKKdK...."";
+            dv[24] = "".....KddK....."";
+            dv[25] = ""......dd......"";
+        }
+        else if (dkf == 2)
+        {
+            dv[0] = ""....oOOo......"";
+            dv[1] = ""...Oo..oO....."";
+            dv[2] = ""..OoOOo.KKK..."";
+            dv[3] = "".Oo...oOhSSK.."";
+            dv[4] = "".O..Oo.OSSSSK."";
+            dv[5] = "".O.O..OKsKKKK."";
+            dv[6] = "".Oo.oOoKSKRRK."";
+            dv[7] = ""..OooO.KsSSK.."";
+            dv[8] = ""........KssK.."";
+            dv[9] = "".......KsK...."";
+            dv[10] = "".....KKKKKK..."";
+            dv[11] = ""....KhSSSKLK.."";
+            dv[12] = ""....KSSsKMMK.."";
+            dv[13] = ""....KLMKMMmK.."";
+            dv[14] = ""....KMLKMmK..."";
+            dv[15] = "".....KMKmMK..."";
+            dv[16] = "".....KMKMmK..."";
+            dv[17] = "".....KhKYYK..."";
+            dv[18] = ""......KKyyK..."";
+            dv[19] = ""......KDPK...."";
+            dv[20] = ""......KDdK...."";
+            dv[21] = "".....KDdPK...."";
+            dv[22] = "".....KdDdK...."";
+            dv[23] = ""......KdK....."";
+            dv[24] = ""......Kd......"";
+            dv[25] = "".......d......"";
+        }
+        else if (dkf == 3)
+        {
+            dv[0] = ""......oOOo...."";
+            dv[1] = "".....Oo..oO..."";
+            dv[2] = ""...KKK.oOOoO.."";
+            dv[3] = ""..KSShOo...oO."";
+            dv[4] = "".KSSSSO.oO..O."";
+            dv[5] = "".KKKKsKO..O.O."";
+            dv[6] = "".KRRKSKoOo.oO."";
+            dv[7] = ""..KSSsK.OooO.."";
+            dv[8] = ""..KssK........"";
+            dv[9] = ""....KsK......."";
+            dv[10] = ""...KKKKKK....."";
+            dv[11] = ""..KLKSSShK...."";
+            dv[12] = ""..KMMKsSSK...."";
+            dv[13] = ""..KmMMKMLK...."";
+            dv[14] = ""...KmMKLMK...."";
+            dv[15] = ""...KMmKMK....."";
+            dv[16] = ""...KmMKMK....."";
+            dv[17] = ""...KYYKhK....."";
+            dv[18] = ""...KyyKK......"";
+            dv[19] = ""....KPDK......"";
+            dv[20] = ""....KdDK......"";
+            dv[21] = ""....KPdDK....."";
+            dv[22] = ""....KdDdK....."";
+            dv[23] = "".....KdK......"";
+            dv[24] = ""......dK......"";
+            dv[25] = ""......d......."";
+        }
+        var dsw;
+        dsw[0] = ""..W.."";
+        dsw[1] = ""..W.."";
+        dsw[2] = "".WCB."";
+        dsw[3] = "".WCB."";
+        dsw[4] = "".WCB."";
+        dsw[5] = "".WCB."";
+        dsw[6] = "".WCB."";
+        dsw[7] = "".WCB."";
+        dsw[8] = ""YYYYY"";
+        dsw[9] = ""..y.."";
+        dsw[10] = ""..y.."";
+        dsw[11] = "".yYy."";
+        // Левитация: огромный, парит высоко и медленно качается
+        var dhv = round(sin(current_time / 400) * 3);
+        var dcx = round((bbox_left + bbox_right) / 2);
+        var dbx = dcx - 14;
+        var dby = bbox_bottom - 52 - 12 + dhv;
+        draw_set_alpha(0.35);
+        draw_set_color(c_black);
+        draw_ellipse(dcx - 14 + dhv, bbox_bottom - 3, dcx + 13 - dhv, bbox_bottom + 2, false);
+        // Тёмная вспышка (T): вокруг темнеет, по земле бежит красное кольцо
+        var dfl = 0;
+        if (global.modDFlash > 0) dfl = sin((60 - global.modDFlash) / 60 * pi);
+        if (dfl > 0)
+        {
+            draw_set_alpha(dfl * 0.55);
+            draw_set_color(c_black);
+            draw_rectangle(view_xview[0], view_yview[0], view_xview[0] + view_wview[0], view_yview[0] + view_hview[0], false);
+            draw_set_alpha(dfl);
+            draw_set_color(make_color_rgb(200, 20, 20));
+            var drg = (60 - global.modDFlash) * 2.5;
+            draw_ellipse(dcx - drg, bbox_bottom - drg / 3, dcx + drg, bbox_bottom + drg / 3, true);
+            draw_ellipse(dcx - drg + 2, bbox_bottom - drg / 3 + 1, dcx + drg - 2, bbox_bottom + drg / 3 - 1, true);
+            draw_set_alpha(1);
+        }
+        // Огненный след: где он пролетает, остаются угольки
+        if (abs(dmx) + abs(dmy) > 0.1 && ((current_time div 60) mod 2) == 0)
+        {
+            global.modTrailN = (global.modTrailN + 1) mod 12;
+            global.modTrailX[global.modTrailN] = dcx + irandom_range(-4, 4);
+            global.modTrailY[global.modTrailN] = bbox_bottom - irandom(2);
+            global.modTrailT[global.modTrailN] = 30;
+        }
+        for (var dti = 0; dti < 12; dti += 1)
+        {
+            if (global.modTrailT[dti] > 0)
+            {
+                global.modTrailT[dti] -= 1;
+                var dtl = global.modTrailT[dti] / 30;
+                var dtx = global.modTrailX[dti] + irandom_range(-1, 1);
+                var dty = global.modTrailY[dti] - round((1 - dtl) * 7);
+                draw_set_alpha(dtl);
+                draw_set_color(choose(make_color_rgb(255, 40, 20), make_color_rgb(255, 130, 30), make_color_rgb(255, 230, 120)));
+                draw_rectangle(dtx, dty, dtx + 1.5, dty + 1.5, false);
+                draw_set_color(make_color_rgb(200, 20, 15));
+                draw_rectangle(dtx + 1, dty + 3, dtx + 2.5, dty + 4.5, false);
+            }
+        }
+        draw_set_alpha(1);
+        // Тёмно-красный ореол с шипами за головой
+        draw_set_alpha(0.55 + sin(current_time / 300) * 0.2);
+        draw_set_color(make_color_rgb(150, 20, 15));
+        draw_circle(dcx, dby + 12, 11, true);
+        draw_circle(dcx, dby + 12, 12, true);
+        for (var dk = 0; dk < 12; dk += 1)
+        {
+            var dka = dk * 30 + current_time / 60;
+            draw_line(dcx + lengthdir_x(12, dka), dby + 12 + lengthdir_y(12, dka), dcx + lengthdir_x(15, dka), dby + 12 + lengthdir_y(15, dka));
+        }
+        draw_set_alpha(1);
+        // 15 мечей веером по бокам и над головой
+        var dscx = dcx;
+        var dscy = dby + 26;
+        for (var di = 0; di < 15; di += 1)
+        {
+            var dang = 90 + (di - 7) * 13 + sin(current_time / 700 + di * 0.5) * 3;
+            var drad = 17 + sin(current_time / 350 + di) * 2 + dfl * 45;
+            for (var dr = 0; dr < 12; dr += 1)
+            {
+                for (var dc = 0; dc < 5; dc += 1)
+                {
+                    var dch = string_char_at(dsw[dr], dc + 1);
+                    if (dch != ""."")
+                    {
+                    var dcol = make_color_rgb(4, 4, 8);
+                    if (dch == ""D"") dcol = make_color_rgb(24, 18, 36);
+                    else if (dch == ""d"") dcol = make_color_rgb(14, 10, 22);
+                    else if (dch == ""P"") dcol = make_color_rgb(60, 40, 90);
+                    else if (dch == ""Y"") dcol = make_color_rgb(230, 190, 60);
+                    else if (dch == ""y"") dcol = make_color_rgb(150, 110, 30);
+                    else if (dch == ""W"") dcol = make_color_rgb(225, 225, 235);
+                    else if (dch == ""S"") dcol = make_color_rgb(70, 72, 84);
+                    else if (dch == ""s"") dcol = make_color_rgb(40, 42, 50);
+                    else if (dch == ""h"") dcol = make_color_rgb(150, 155, 170);
+                    else if (dch == ""R"") dcol = make_color_rgb(255, 40, 20);
+                    else if (dch == ""O"") dcol = make_color_rgb(175, 155, 115);
+                    else if (dch == ""o"") dcol = make_color_rgb(105, 90, 65);
+                    else if (dch == ""M"") dcol = make_color_rgb(70, 55, 75);
+                    else if (dch == ""m"") dcol = make_color_rgb(45, 35, 50);
+                    else if (dch == ""L"") dcol = make_color_rgb(115, 95, 120);
+                    else if (dch == ""C"") dcol = make_color_rgb(160, 165, 180);
+                    else if (dch == ""B"") dcol = make_color_rgb(95, 100, 115);
+                    draw_set_color(dcol);
+                        var dal = drad + (11 - dr) * 2;
+                        var dsd = (dc - 2) * 1.5;
+                        var dpx = dscx + lengthdir_x(dal, dang) + lengthdir_x(dsd, dang - 90);
+                        var dpy = dscy + lengthdir_y(dal, dang) + lengthdir_y(dsd, dang - 90);
+                        draw_rectangle(dpx - 1, dpy - 1, dpx + 0.5, dpy + 0.5, false);
+                    }
+                }
+            }
+        }
+        // Тело в 2 раза больше обычного, всегда лицом вперёд
+        for (var dr2 = 0; dr2 < 26; dr2 += 1)
+        {
+            var drow = dv[dr2];
+            for (var dc2 = 0; dc2 < 14; dc2 += 1)
+            {
+                var dch = string_char_at(drow, dc2 + 1);
+                if (dch != ""."")
+                {
+                    var dcol = make_color_rgb(4, 4, 8);
+                    if (dch == ""D"") dcol = make_color_rgb(24, 18, 36);
+                    else if (dch == ""d"") dcol = make_color_rgb(14, 10, 22);
+                    else if (dch == ""P"") dcol = make_color_rgb(60, 40, 90);
+                    else if (dch == ""Y"") dcol = make_color_rgb(230, 190, 60);
+                    else if (dch == ""y"") dcol = make_color_rgb(150, 110, 30);
+                    else if (dch == ""W"") dcol = make_color_rgb(225, 225, 235);
+                    else if (dch == ""S"") dcol = make_color_rgb(70, 72, 84);
+                    else if (dch == ""s"") dcol = make_color_rgb(40, 42, 50);
+                    else if (dch == ""h"") dcol = make_color_rgb(150, 155, 170);
+                    else if (dch == ""R"") dcol = make_color_rgb(255, 40, 20);
+                    else if (dch == ""O"") dcol = make_color_rgb(175, 155, 115);
+                    else if (dch == ""o"") dcol = make_color_rgb(105, 90, 65);
+                    else if (dch == ""M"") dcol = make_color_rgb(70, 55, 75);
+                    else if (dch == ""m"") dcol = make_color_rgb(45, 35, 50);
+                    else if (dch == ""L"") dcol = make_color_rgb(115, 95, 120);
+                    else if (dch == ""C"") dcol = make_color_rgb(160, 165, 180);
+                    else if (dch == ""B"") dcol = make_color_rgb(95, 100, 115);
+                    draw_set_color(dcol);
+                    draw_rectangle(dbx + dc2 * 2, dby + dr2 * 2, dbx + dc2 * 2 + 1.5, dby + dr2 * 2 + 1.5, false);
+                }
+            }
+        }
+        // Пламя из глаз
+        if (dkf == 0)
+        {
+        for (var ef = 0; ef < 5; ef += 1)
+        {
+            var efh = random(1);
+            var ex = dbx + 10 + round(random_range(-1, 1) * (1 + efh * 3) + sin(current_time / 90 + ef) * efh * 3);
+            var ey = dby + 12 - round(efh * 22);
+            draw_set_alpha(1 - efh * 0.8);
+            draw_set_color(make_color_rgb(255, 40, 20));
+            if (efh < 0.25) draw_set_color(make_color_rgb(255, 230, 120));
+            else if (efh < 0.5) draw_set_color(make_color_rgb(255, 130, 30));
+            var efs = 2 - efh;
+            draw_rectangle(ex, ey, ex + efs, ey + efs, false);
+        }
+        for (var ef = 0; ef < 5; ef += 1)
+        {
+            var efh = random(1);
+            var ex = dbx + 16 + round(random_range(-1, 1) * (1 + efh * 3) + sin(current_time / 90 + ef) * efh * 3);
+            var ey = dby + 12 - round(efh * 22);
+            draw_set_alpha(1 - efh * 0.8);
+            draw_set_color(make_color_rgb(255, 40, 20));
+            if (efh < 0.25) draw_set_color(make_color_rgb(255, 230, 120));
+            else if (efh < 0.5) draw_set_color(make_color_rgb(255, 130, 30));
+            var efs = 2 - efh;
+            draw_rectangle(ex, ey, ex + efs, ey + efs, false);
+        }
+        draw_set_alpha(0.35 + random(0.2));
+        draw_set_color(make_color_rgb(255, 40, 20));
+        draw_circle(dbx + 10 + 1, dby + 12 + 1, 3, false);
+        draw_circle(dbx + 16 + 1, dby + 12 + 1, 3, false);
+        draw_set_alpha(1);
+        }
+        if (dkf == 2)
+        {
+        for (var ef = 0; ef < 5; ef += 1)
+        {
+            var efh = random(1);
+            var ex = dbx + 20 + round(random_range(-1, 1) * (1 + efh * 3) + sin(current_time / 90 + ef) * efh * 3);
+            var ey = dby + 12 - round(efh * 22);
+            draw_set_alpha(1 - efh * 0.8);
+            draw_set_color(make_color_rgb(255, 40, 20));
+            if (efh < 0.25) draw_set_color(make_color_rgb(255, 230, 120));
+            else if (efh < 0.5) draw_set_color(make_color_rgb(255, 130, 30));
+            var efs = 2 - efh;
+            draw_rectangle(ex, ey, ex + efs, ey + efs, false);
+        }
+        for (var ef = 0; ef < 5; ef += 1)
+        {
+            var efh = random(1);
+            var ex = dbx + 22 + round(random_range(-1, 1) * (1 + efh * 3) + sin(current_time / 90 + ef) * efh * 3);
+            var ey = dby + 12 - round(efh * 22);
+            draw_set_alpha(1 - efh * 0.8);
+            draw_set_color(make_color_rgb(255, 40, 20));
+            if (efh < 0.25) draw_set_color(make_color_rgb(255, 230, 120));
+            else if (efh < 0.5) draw_set_color(make_color_rgb(255, 130, 30));
+            var efs = 2 - efh;
+            draw_rectangle(ex, ey, ex + efs, ey + efs, false);
+        }
+        draw_set_alpha(0.35 + random(0.2));
+        draw_set_color(make_color_rgb(255, 40, 20));
+        draw_circle(dbx + 20 + 1, dby + 12 + 1, 3, false);
+        draw_circle(dbx + 22 + 1, dby + 12 + 1, 3, false);
+        draw_set_alpha(1);
+        }
+        if (dkf == 3)
+        {
+        for (var ef = 0; ef < 5; ef += 1)
+        {
+            var efh = random(1);
+            var ex = dbx + 4 + round(random_range(-1, 1) * (1 + efh * 3) + sin(current_time / 90 + ef) * efh * 3);
+            var ey = dby + 12 - round(efh * 22);
+            draw_set_alpha(1 - efh * 0.8);
+            draw_set_color(make_color_rgb(255, 40, 20));
+            if (efh < 0.25) draw_set_color(make_color_rgb(255, 230, 120));
+            else if (efh < 0.5) draw_set_color(make_color_rgb(255, 130, 30));
+            var efs = 2 - efh;
+            draw_rectangle(ex, ey, ex + efs, ey + efs, false);
+        }
+        for (var ef = 0; ef < 5; ef += 1)
+        {
+            var efh = random(1);
+            var ex = dbx + 6 + round(random_range(-1, 1) * (1 + efh * 3) + sin(current_time / 90 + ef) * efh * 3);
+            var ey = dby + 12 - round(efh * 22);
+            draw_set_alpha(1 - efh * 0.8);
+            draw_set_color(make_color_rgb(255, 40, 20));
+            if (efh < 0.25) draw_set_color(make_color_rgb(255, 230, 120));
+            else if (efh < 0.5) draw_set_color(make_color_rgb(255, 130, 30));
+            var efs = 2 - efh;
+            draw_rectangle(ex, ey, ex + efs, ey + efs, false);
+        }
+        draw_set_alpha(0.35 + random(0.2));
+        draw_set_color(make_color_rgb(255, 40, 20));
+        draw_circle(dbx + 4 + 1, dby + 12 + 1, 3, false);
+        draw_circle(dbx + 6 + 1, dby + 12 + 1, 3, false);
+        draw_set_alpha(1);
+        }
+        draw_set_color(c_white);
+        exit;
+    }
+}
+");
+// DEITY-END
+
+// DEITY-START
+// ===== Священный рыцарь: все зовут тебя лордом и дрожат от страха =====
+// Перед тем как появится текст разговора — меняем слова
+group.QueuePrepend("gml_Object_OBJ_WRITER_Create_0", @"
+if (variable_global_exists(""modDeity""))
+{
+    if (global.modDeity && variable_global_exists(""msg""))
+    {
+        var ln = array_length_1d(global.msg);
+        for (var li = 0; li < ln; li += 1)
+        {
+            var lm = global.msg[li];
+            if (is_string(lm))
+            {
+                lm = string_replace_all(lm, ""innocent one"", ""lord"");
+                lm = string_replace_all(lm, ""Innocent one"", ""Lord"");
+                lm = string_replace_all(lm, ""little one"", ""lord"");
+                lm = string_replace_all(lm, ""Little one"", ""Lord"");
+                lm = string_replace_all(lm, ""young one"", ""lord"");
+                lm = string_replace_all(lm, ""Young one"", ""Lord"");
+                lm = string_replace_all(lm, ""small one"", ""lord"");
+                lm = string_replace_all(lm, ""Small one"", ""Lord"");
+                lm = string_replace_all(lm, ""little human"", ""lord"");
+                lm = string_replace_all(lm, ""little kid"", ""lord"");
+                lm = string_replace_all(lm, ""little child"", ""lord"");
+                lm = string_replace_all(lm, ""human"", ""lord"");
+                lm = string_replace_all(lm, ""Human"", ""Lord"");
+                lm = string_replace_all(lm, ""HUMAN"", ""LORD"");
+                lm = string_replace_all(lm, ""kiddo"", ""lord"");
+                lm = string_replace_all(lm, ""Kiddo"", ""Lord"");
+                lm = string_replace_all(lm, "" kid."", "" lord."");
+                lm = string_replace_all(lm, ""Kid."", ""Lord."");
+                lm = string_replace_all(lm, "" child."", "" lord."");
+                lm = string_replace_all(lm, ""Child."", ""Lord."");
+                lm = string_replace_all(lm, "" boy."", "" lord."");
+                lm = string_replace_all(lm, ""Boy."", ""Lord."");
+                lm = string_replace_all(lm, "" kid,"", "" lord,"");
+                lm = string_replace_all(lm, ""Kid,"", ""Lord,"");
+                lm = string_replace_all(lm, "" child,"", "" lord,"");
+                lm = string_replace_all(lm, ""Child,"", ""Lord,"");
+                lm = string_replace_all(lm, "" boy,"", "" lord,"");
+                lm = string_replace_all(lm, ""Boy,"", ""Lord,"");
+                lm = string_replace_all(lm, "" kid!"", "" lord!"");
+                lm = string_replace_all(lm, ""Kid!"", ""Lord!"");
+                lm = string_replace_all(lm, "" child!"", "" lord!"");
+                lm = string_replace_all(lm, ""Child!"", ""Lord!"");
+                lm = string_replace_all(lm, "" boy!"", "" lord!"");
+                lm = string_replace_all(lm, ""Boy!"", ""Lord!"");
+                lm = string_replace_all(lm, "" kid?"", "" lord?"");
+                lm = string_replace_all(lm, ""Kid?"", ""Lord?"");
+                lm = string_replace_all(lm, "" child?"", "" lord?"");
+                lm = string_replace_all(lm, ""Child?"", ""Lord?"");
+                lm = string_replace_all(lm, "" boy?"", "" lord?"");
+                lm = string_replace_all(lm, ""Boy?"", ""Lord?"");
+                lm = string_replace_all(lm, "" kid^"", "" lord^"");
+                lm = string_replace_all(lm, ""Kid^"", ""Lord^"");
+                lm = string_replace_all(lm, "" child^"", "" lord^"");
+                lm = string_replace_all(lm, ""Child^"", ""Lord^"");
+                lm = string_replace_all(lm, "" boy^"", "" lord^"");
+                lm = string_replace_all(lm, ""Boy^"", ""Lord^"");
+                lm = string_replace_all(lm, "" kid&"", "" lord&"");
+                lm = string_replace_all(lm, ""Kid&"", ""Lord&"");
+                lm = string_replace_all(lm, "" child&"", "" lord&"");
+                lm = string_replace_all(lm, ""Child&"", ""Lord&"");
+                lm = string_replace_all(lm, "" boy&"", "" lord&"");
+                lm = string_replace_all(lm, ""Boy&"", ""Lord&"");
+                lm = string_replace_all(lm, "" kid/"", "" lord/"");
+                lm = string_replace_all(lm, ""Kid/"", ""Lord/"");
+                lm = string_replace_all(lm, "" child/"", "" lord/"");
+                lm = string_replace_all(lm, ""Child/"", ""Lord/"");
+                lm = string_replace_all(lm, "" boy/"", "" lord/"");
+                lm = string_replace_all(lm, ""Boy/"", ""Lord/"");
+                lm = string_replace_all(lm, "" kid "", "" lord "");
+                lm = string_replace_all(lm, ""Kid "", ""Lord "");
+                lm = string_replace_all(lm, "" child "", "" lord "");
+                lm = string_replace_all(lm, ""Child "", ""Lord "");
+                lm = string_replace_all(lm, "" boy "", "" lord "");
+                lm = string_replace_all(lm, ""Boy "", ""Lord "");
+                lm = string_replace_all(lm, "" kid-"", "" lord-"");
+                lm = string_replace_all(lm, ""Kid-"", ""Lord-"");
+                lm = string_replace_all(lm, "" child-"", "" lord-"");
+                lm = string_replace_all(lm, ""Child-"", ""Lord-"");
+                lm = string_replace_all(lm, "" boy-"", "" lord-"");
+                lm = string_replace_all(lm, ""Boy-"", ""Lord-"");
+                lm = string_replace_all(lm, "" kid'"", "" lord'"");
+                lm = string_replace_all(lm, ""Kid'"", ""Lord'"");
+                lm = string_replace_all(lm, "" child'"", "" lord'"");
+                lm = string_replace_all(lm, ""Child'"", ""Lord'"");
+                lm = string_replace_all(lm, "" boy'"", "" lord'"");
+                lm = string_replace_all(lm, ""Boy'"", ""Lord'"");
+                global.msg[li] = lm;
+            }
+        }
+    }
+}
+");
+// Следующие страницы разговора — тоже
+group.QueueAppend("gml_Object_obj_time_Step_1", @"
+if (instance_exists(OBJ_WRITER))
+{
+if (variable_global_exists(""modDeity""))
+{
+    if (global.modDeity && variable_global_exists(""msg""))
+    {
+        var ln = array_length_1d(global.msg);
+        for (var li = 0; li < ln; li += 1)
+        {
+            var lm = global.msg[li];
+            if (is_string(lm))
+            {
+                lm = string_replace_all(lm, ""innocent one"", ""lord"");
+                lm = string_replace_all(lm, ""Innocent one"", ""Lord"");
+                lm = string_replace_all(lm, ""little one"", ""lord"");
+                lm = string_replace_all(lm, ""Little one"", ""Lord"");
+                lm = string_replace_all(lm, ""young one"", ""lord"");
+                lm = string_replace_all(lm, ""Young one"", ""Lord"");
+                lm = string_replace_all(lm, ""small one"", ""lord"");
+                lm = string_replace_all(lm, ""Small one"", ""Lord"");
+                lm = string_replace_all(lm, ""little human"", ""lord"");
+                lm = string_replace_all(lm, ""little kid"", ""lord"");
+                lm = string_replace_all(lm, ""little child"", ""lord"");
+                lm = string_replace_all(lm, ""human"", ""lord"");
+                lm = string_replace_all(lm, ""Human"", ""Lord"");
+                lm = string_replace_all(lm, ""HUMAN"", ""LORD"");
+                lm = string_replace_all(lm, ""kiddo"", ""lord"");
+                lm = string_replace_all(lm, ""Kiddo"", ""Lord"");
+                lm = string_replace_all(lm, "" kid."", "" lord."");
+                lm = string_replace_all(lm, ""Kid."", ""Lord."");
+                lm = string_replace_all(lm, "" child."", "" lord."");
+                lm = string_replace_all(lm, ""Child."", ""Lord."");
+                lm = string_replace_all(lm, "" boy."", "" lord."");
+                lm = string_replace_all(lm, ""Boy."", ""Lord."");
+                lm = string_replace_all(lm, "" kid,"", "" lord,"");
+                lm = string_replace_all(lm, ""Kid,"", ""Lord,"");
+                lm = string_replace_all(lm, "" child,"", "" lord,"");
+                lm = string_replace_all(lm, ""Child,"", ""Lord,"");
+                lm = string_replace_all(lm, "" boy,"", "" lord,"");
+                lm = string_replace_all(lm, ""Boy,"", ""Lord,"");
+                lm = string_replace_all(lm, "" kid!"", "" lord!"");
+                lm = string_replace_all(lm, ""Kid!"", ""Lord!"");
+                lm = string_replace_all(lm, "" child!"", "" lord!"");
+                lm = string_replace_all(lm, ""Child!"", ""Lord!"");
+                lm = string_replace_all(lm, "" boy!"", "" lord!"");
+                lm = string_replace_all(lm, ""Boy!"", ""Lord!"");
+                lm = string_replace_all(lm, "" kid?"", "" lord?"");
+                lm = string_replace_all(lm, ""Kid?"", ""Lord?"");
+                lm = string_replace_all(lm, "" child?"", "" lord?"");
+                lm = string_replace_all(lm, ""Child?"", ""Lord?"");
+                lm = string_replace_all(lm, "" boy?"", "" lord?"");
+                lm = string_replace_all(lm, ""Boy?"", ""Lord?"");
+                lm = string_replace_all(lm, "" kid^"", "" lord^"");
+                lm = string_replace_all(lm, ""Kid^"", ""Lord^"");
+                lm = string_replace_all(lm, "" child^"", "" lord^"");
+                lm = string_replace_all(lm, ""Child^"", ""Lord^"");
+                lm = string_replace_all(lm, "" boy^"", "" lord^"");
+                lm = string_replace_all(lm, ""Boy^"", ""Lord^"");
+                lm = string_replace_all(lm, "" kid&"", "" lord&"");
+                lm = string_replace_all(lm, ""Kid&"", ""Lord&"");
+                lm = string_replace_all(lm, "" child&"", "" lord&"");
+                lm = string_replace_all(lm, ""Child&"", ""Lord&"");
+                lm = string_replace_all(lm, "" boy&"", "" lord&"");
+                lm = string_replace_all(lm, ""Boy&"", ""Lord&"");
+                lm = string_replace_all(lm, "" kid/"", "" lord/"");
+                lm = string_replace_all(lm, ""Kid/"", ""Lord/"");
+                lm = string_replace_all(lm, "" child/"", "" lord/"");
+                lm = string_replace_all(lm, ""Child/"", ""Lord/"");
+                lm = string_replace_all(lm, "" boy/"", "" lord/"");
+                lm = string_replace_all(lm, ""Boy/"", ""Lord/"");
+                lm = string_replace_all(lm, "" kid "", "" lord "");
+                lm = string_replace_all(lm, ""Kid "", ""Lord "");
+                lm = string_replace_all(lm, "" child "", "" lord "");
+                lm = string_replace_all(lm, ""Child "", ""Lord "");
+                lm = string_replace_all(lm, "" boy "", "" lord "");
+                lm = string_replace_all(lm, ""Boy "", ""Lord "");
+                lm = string_replace_all(lm, "" kid-"", "" lord-"");
+                lm = string_replace_all(lm, ""Kid-"", ""Lord-"");
+                lm = string_replace_all(lm, "" child-"", "" lord-"");
+                lm = string_replace_all(lm, ""Child-"", ""Lord-"");
+                lm = string_replace_all(lm, "" boy-"", "" lord-"");
+                lm = string_replace_all(lm, ""Boy-"", ""Lord-"");
+                lm = string_replace_all(lm, "" kid'"", "" lord'"");
+                lm = string_replace_all(lm, ""Kid'"", ""Lord'"");
+                lm = string_replace_all(lm, "" child'"", "" lord'"");
+                lm = string_replace_all(lm, ""Child'"", ""Lord'"");
+                lm = string_replace_all(lm, "" boy'"", "" lord'"");
+                lm = string_replace_all(lm, ""Boy'"", ""Lord'"");
+                global.msg[li] = lm;
+            }
+        }
+    }
+}
+}
+");
+// DEITY-END
 
 
 
-
+// DEITY-START
+// ===== Священный рыцарь: атака дождём мечей и тёмная вспышка (T) =====
+group.QueueAppend("gml_Object_obj_time_Step_1", @"
+if (variable_global_exists(""modDHit""))
+{
+    if (global.modDeity && instance_exists(obj_heart))
+    {
+        // Своя атака: при каждом ударе на врага падает дождь из 15 мечей (+40 урона)
+        var dhit = instance_exists(obj_slice);
+        if (instance_exists(obj_target))
+        {
+            if (obj_target.fade == 1) dhit = 1;
+        }
+        // Новый удар засчитывается, только когда прицел прошлого удара исчез
+        if (!instance_exists(obj_target) && !instance_exists(obj_slice)) global.modDReady = 1;
+        if (dhit && global.modDReady && global.modDHit <= 0 && !global.modSword)
+        {
+            global.modDReady = 0;
+            var dmn = array_length_1d(global.monsterinstance);
+            var dfound = 0;
+            for (var dj = 0; dj < dmn; dj += 1)
+            {
+                if (!dfound && instance_exists(global.monsterinstance[dj]))
+                {
+                    dfound = 1;
+                    if (global.monsterhp[dj] > 1) global.monsterhp[dj] = max(1, global.monsterhp[dj] - 40);
+                    global.modDX = (global.monsterinstance[dj].bbox_left + global.monsterinstance[dj].bbox_right) / 2;
+                    global.modDY = (global.monsterinstance[dj].bbox_top + global.monsterinstance[dj].bbox_bottom) / 2;
+                }
+            }
+            global.modDHit = 70;
+            var das = asset_get_index(""snd_laz"");
+            if (das >= 0) snd_play(das);
+        }
+    }
+    if (global.modDHit > 0) global.modDHit -= 1;
+    if (global.modDFlash > 0) global.modDFlash -= 1;
+    // Тёмная вспышка на карте (T)
+    if (global.modDeity && global.modDFlash <= 0 && instance_exists(obj_mainchara))
+    {
+        if (global.interact == 0 && keyboard_check_pressed(ord(""T"")))
+        {
+            global.modDFlash = 60;
+            var dfs = asset_get_index(""snd_bombsplosion"");
+            if (dfs < 0) dfs = asset_get_index(""snd_power"");
+            if (dfs >= 0) snd_play(dfs);
+        }
+    }
+}
+");
+group.QueueAppend("gml_Object_obj_time_Draw_64", @"
+if (variable_global_exists(""modDHit""))
+{
+    if (global.modDeity && instance_exists(obj_heart))
+    {
+        var rgw = display_get_gui_width();
+        var rgh = display_get_gui_height();
+        var rs = rgw / 640;
+        var rvw = view_wview[0];
+        if (rvw <= 0) rvw = 640;
+        var rvh = view_hview[0];
+        if (rvh <= 0) rvh = 480;
+        var rkx = rgw / rvw;
+        var rky = rgh / rvh;
+        // Своя душа: тёмно-красная, в золотой обводке, с золотыми рожками
+        with (obj_heart)
+        {
+            if (visible)
+            {
+                var rhx = (x - view_xview[0]) * rkx;
+                var rhy = (y - view_yview[0]) * rky;
+                d3d_set_fog(true, make_color_rgb(230, 190, 60), 0, 0);
+                draw_sprite_ext(sprite_index, image_index, rhx - rkx, rhy, rkx, rky, 0, c_white, 1);
+                draw_sprite_ext(sprite_index, image_index, rhx + rkx, rhy, rkx, rky, 0, c_white, 1);
+                draw_sprite_ext(sprite_index, image_index, rhx, rhy - rky, rkx, rky, 0, c_white, 1);
+                draw_sprite_ext(sprite_index, image_index, rhx, rhy + rky, rkx, rky, 0, c_white, 1);
+                d3d_set_fog(true, make_color_rgb(150, 0, 20), 0, 0);
+                draw_sprite_ext(sprite_index, image_index, rhx, rhy, rkx, rky, 0, c_white, 1);
+                d3d_set_fog(false, c_black, 0, 0);
+                draw_set_color(make_color_rgb(230, 190, 60));
+                draw_rectangle(rhx + 1 * rkx, rhy - 3 * rky, rhx + 3 * rkx, rhy, false);
+                draw_rectangle(rhx + 13 * rkx, rhy - 3 * rky, rhx + 15 * rkx, rhy, false);
+                draw_rectangle(rhx, rhy - 5 * rky, rhx + 2 * rkx, rhy - 3 * rky, false);
+                draw_rectangle(rhx + 14 * rkx, rhy - 5 * rky, rhx + 16 * rkx, rhy - 3 * rky, false);
+            }
+        }
+        // Дождь из мечей падает на врага
+        if (global.modDHit > 20)
+        {
+            var rt = (70 - global.modDHit) / 50;
+            var rtx = (global.modDX - view_xview[0]) * rkx;
+            var rty = (global.modDY - view_yview[0]) * rky;
+            for (var ri = 0; ri < 15; ri += 1)
+            {
+                var rp = min(1, max(0, (rt - ri / 15 * 0.5) / 0.35));
+                if (rp > 0 && rp < 1)
+                {
+                    var rx = rtx + (ri - 7) * 16 * rs;
+                    var ry = -60 * rs + (rty + 20 * rs + 60 * rs) * rp;
+                    // клинок острием вниз
+                    draw_set_color(make_color_rgb(225, 225, 235));
+                    draw_rectangle(rx - 3 * rs, ry - 40 * rs, rx, ry - 8 * rs, false);
+                    draw_set_color(make_color_rgb(120, 125, 140));
+                    draw_rectangle(rx, ry - 40 * rs, rx + 3 * rs, ry - 8 * rs, false);
+                    draw_set_color(make_color_rgb(225, 225, 235));
+                    draw_triangle(rx - 3 * rs, ry - 8 * rs, rx + 3 * rs, ry - 8 * rs, rx, ry, false);
+                    // гарда и рукоять
+                    draw_set_color(make_color_rgb(230, 190, 60));
+                    draw_rectangle(rx - 9 * rs, ry - 44 * rs, rx + 9 * rs, ry - 40 * rs, false);
+                    draw_set_color(make_color_rgb(150, 110, 30));
+                    draw_rectangle(rx - 2 * rs, ry - 56 * rs, rx + 2 * rs, ry - 44 * rs, false);
+                }
+            }
+            if (rt > 0.6)
+            {
+                var rq = (rt - 0.6) / 0.4;
+                draw_set_alpha(1 - rq);
+                draw_set_color(make_color_rgb(220, 20, 20));
+                draw_circle(rtx, rty, (10 + rq * 100) * rs, true);
+                draw_circle(rtx, rty, (6 + rq * 70) * rs, true);
+                draw_set_font(fnt_maintext);
+                draw_set_color(make_color_rgb(255, 60, 40));
+                draw_text_transformed(rtx - 40 * rs, rty - 80 * rs, ""+40"", rs * 1.8, rs * 1.8, 0);
+                draw_set_alpha(1);
+            }
+        }
+        draw_set_color(c_white);
+    }
+}
+");
+// DEITY-END
 
 
 // ===== Версия 0.8: скрипт, который рисует русский текст своим пиксельным шрифтом =====

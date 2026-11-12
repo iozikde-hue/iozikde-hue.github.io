@@ -356,7 +356,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
   </section>
 
   <section class="box mod" aria-labelledby="m3" data-game="mc" hidden>
-    <div class="stage"><canvas id="tank" width="96" height="96" aria-label="Пиксельный танк едет и стреляет"></canvas></div>
+    <div class="stage"><canvas id="tank" width="96" height="96" aria-label="Значок Kub Client: переливающийся куб на фоне блока травы"></canvas></div>
     <div class="mod-body">
       <div class="mod-head">
         <h2 id="m3">KUB CLIENT</h2>
@@ -584,28 +584,60 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
   if (reduce) frame(0); else requestAnimationFrame(loop);
 })();
 
-// Танк Kub Client: едет туда-сюда и стреляет
+// Значок Kub Client: переливающийся куб с буквой K на фоне блока травы
 (function () {
   var cv = document.getElementById("tank"), g = cv.getContext("2d");
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function r(x, y, w, h, c) { g.fillStyle = c; g.fillRect(Math.round(x), Math.round(y), w, h); }
+  // Фон — сторона блока травы, как в Minecraft: пиксели 6×6, сверху трава с подтёками
+  var PX = 6, N = 16, rnd = 7;
+  function rand() { rnd = (rnd * 16807) % 2147483647; return rnd / 2147483647; }
+  var GRASS = ["#5fb236", "#4f9a2c", "#6cc040", "#47892a"], DIRT = ["#7a5532", "#6b4a2b", "#8b6239", "#5c3f24", "#966c43"];
+  var tex = [];
+  for (var y = 0; y < N; y++) {
+    tex.push([]);
+    for (var x = 0; x < N; x++) {
+      var grass = y < 3 || (y < 5 && rand() < (y === 3 ? 0.6 : 0.3));
+      var pal = grass ? GRASS : DIRT;
+      tex[y].push(pal[Math.floor(rand() * pal.length)]);
+    }
+  }
+  // Буква K 5×7
+  var K = ["X...X", "X..X.", "X.X..", "XX...", "X.X..", "X..X.", "X...X"];
+  function hsl(h, l) { return "hsl(" + ((h % 360) + 360) % 360 + ",95%," + l + "%)"; }
   function frame(t) {
-    g.fillStyle = "#000"; g.fillRect(0, 0, 96, 96);
-    // трава и земля, как блоки Minecraft
-    for (var i = 0; i < 12; i++) { r(i * 8, 72, 8, 3, i % 2 ? "#4f9a2c" : "#5fb236"); r(i * 8, 75, 8, 21, i % 2 ? "#6b4a2b" : "#7a5532"); }
-    var x = 14 + Math.round(Math.sin(t / 900) * 8);
-    // гусеницы с бегущими траками
-    r(x, 62, 44, 10, "#222");
-    for (var k = 0; k < 6; k++) r(x + 2 + ((k * 8 + Math.floor(t / 60)) % 40), 64, 4, 6, "#555");
-    // корпус и башня
-    r(x - 2, 54, 48, 8, "#3f7a32"); r(x, 52, 44, 3, "#56a043");
-    r(x + 12, 44, 20, 10, "#3f7a32"); r(x + 14, 42, 16, 3, "#56a043");
-    r(x + 32, 47, 22, 3, "#8a8f99"); // ствол
-    r(x + 16, 34, 1, 8, "#ddd");     // антенна
-    // выстрел раз в 2 секунды
-    var p = (t % 2000) / 2000;
-    if (p < 0.12) { r(x + 54, 44, 5, 9, "#ffe03d"); r(x + 57, 46, 4, 5, "#ff9b21"); }
-    else if (p < 0.5) { var bx = x + 56 + (p - 0.12) * 120; r(bx, 47, 4, 3, "#ff9b21"); }
+    for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) { g.fillStyle = tex[y][x]; g.fillRect(x * PX, y * PX, PX, PX); }
+    g.fillStyle = "rgba(0,0,0,0.35)"; g.fillRect(0, 0, 96, 96);
+    var bob = Math.round(Math.sin(t / 500) * 2);
+    var h = t / 12, fx = 22, fy = 34 + bob, S = 40, D = 12;
+    // тень под кубом
+    g.fillStyle = "rgba(0,0,0,0.45)"; g.fillRect(fx + 4, 82, S + D - 4, 4);
+    // верх и правая грань — параллелограммы по пикселям
+    for (var i = 0; i < D; i++) {
+      g.fillStyle = hsl(h + 40, 72); g.fillRect(fx + i + 1, fy - i - 1, S, 1);
+      g.fillStyle = hsl(h - 40, 38); g.fillRect(fx + S + i, fy - i, 1, S);
+    }
+    // передняя грань: цвет переливается сверху вниз
+    for (var r = 0; r < S; r += 2) { g.fillStyle = hsl(h + r * 3, 55); g.fillRect(fx, fy + r, S, 2); }
+    // бегущий блик по диагонали
+    var sweep = ((t / 8) % 140) - 40;
+    g.fillStyle = "rgba(255,255,255,0.35)";
+    for (var r2 = 0; r2 < S; r2++) {
+      var sx = sweep - r2 * 0.6;
+      var x0 = Math.max(fx, fx + sx), x1 = Math.min(fx + S, fx + sx + 8);
+      if (x1 > x0) g.fillRect(Math.round(x0), fy + r2, Math.round(x1 - x0), 1);
+    }
+    // рамка и буква K
+    g.strokeStyle = "rgba(0,0,0,0.6)"; g.lineWidth = 2; g.strokeRect(fx + 1, fy + 1, S - 2, S - 2);
+    for (var ky = 0; ky < 7; ky++) for (var kx = 0; kx < 5; kx++) if (K[ky][kx] === "X") {
+      g.fillStyle = "#0b0b10"; g.fillRect(fx + 10 + kx * 4 + 1, fy + 6 + ky * 4 + 1, 4, 4);
+      g.fillStyle = "#ffffff"; g.fillRect(fx + 10 + kx * 4, fy + 6 + ky * 4, 4, 4);
+    }
+    // искорки вокруг
+    for (var k = 0; k < 3; k++) {
+      var a = t / 700 + k * 2.1;
+      g.fillStyle = hsl(h + k * 120, 70);
+      g.fillRect(Math.round(48 + Math.cos(a) * 40), Math.round(50 + Math.sin(a) * 34), 3, 3);
+    }
   }
   function loop(t) { frame(t); requestAnimationFrame(loop); }
   if (reduce) frame(0); else requestAnimationFrame(loop);

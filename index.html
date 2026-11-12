@@ -24,6 +24,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   background: var(--bg);
   color: var(--fg);
@@ -150,6 +151,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
   <nav class="games" aria-label="Игры">
     <button class="game" aria-pressed="true" type="button" data-show="ut">UNDERTALE</button>
     <button class="game" aria-pressed="false" type="button" data-show="gd">GEOMETRY DASH</button>
+    <button class="game" aria-pressed="false" type="button" data-show="mc">MINECRAFT</button>
   </nav>
 
   <section class="box mod" aria-labelledby="m1" data-game="ut">
@@ -353,6 +355,89 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     </div>
   </section>
 
+  <section class="box mod" aria-labelledby="m3" data-game="mc" hidden>
+    <div class="stage"><canvas id="tank" width="96" height="96" aria-label="Пиксельный танк едет и стреляет"></canvas></div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h2 id="m3">KUB CLIENT</h2>
+        <span class="free">БЕСПЛАТНО</span>
+        <span class="ver">ВЕРСИЯ 1.3</span>
+      </div>
+      <p>Своё <span class="knight-name">чит-меню для Minecraft</span> с неоновым дизайном. 40 функций в 6 вкладках: полёт, X-Ray, телепорт, бессмертие, взрывные стрелы, радар. А ещё можно построить истребитель или огромный танк и управлять им.</p>
+      <ul class="keys">
+        <li><kbd>RSH</kbd><span>Right Shift — открыть меню. Нажми на карточку — функция включится</span></li>
+        <li><kbd>RUN</kbd><span>Движение: Speed, Spider, Jesus (ходишь по воде), HighJump, Step, NoFall, IceSpeed</span></li>
+        <li><kbd>FLY</kbd><span>Полёт и ТП: Fly, Jetpack, Blink, Teleport, Elytra+, метки с лучами</span></li>
+        <li><kbd>EYE</kbd><span>Зрение: X-Ray, Fullbright, ESP, Tracers, ChestESP, Zoom, радар мобов, траектории</span></li>
+        <li><kbd>PVP</kbd><span>Бой: KillAura, GodMode, AutoTotem, AutoEat, AutoShield, молния, взрывные стрелы</span></li>
+        <li><kbd>ORE</kbd><span>Добыча: FastBreak, VeinMiner, AutoTool, AutoSmelt, Magnet, BigHand</span></li>
+        <li><kbd>BOT</kbd><span>Роботы: истребитель и танк, которыми можно управлять (нужен мод Create Aeronautics)</span></li>
+        <li><kbd>R</kbd><span>в танке — выстрел из пушки, <b>C</b> — пулемёты, <b>WASD</b> — ехать</span></li>
+      </ul>
+      <div class="box need">
+        <h3>НУЖНО</h3>
+        <p>Minecraft 1.21.1 и NeoForge. Работает в одиночной игре.</p>
+      </div>
+      <div class="dl">
+        <a class="btn big" href="kubclient-1.3.0.jar" download>СКАЧАТЬ KUB CLIENT</a>
+        <span class="ver">JAR · 0,1 МБ</span>
+      </div>
+      <p class="note">Только для своих миров. На чужих серверах читы запрещены, за них банят.</p>
+      <details class="log">
+        <summary>ЧТО НОВОГО</summary>
+        <div class="log-list">
+          <div><b>1.3</b>
+            <ul>
+              <li>Добавлено: огромный танк (TankBuild) с пушкой и двумя пулемётами.</li>
+              <li>Добавлено: езда на танке (TankDrive): WASD, турбо на Пробел, R — пушка, C — пулемёты.</li>
+            </ul>
+          </div>
+          <div><b>1.2</b>
+            <ul>
+              <li>Добавлено: истребитель (JetBuild) и полёт на нём (JetPilot): W — газ, летит туда, куда смотришь.</li>
+              <li>Исправлено: игра меньше лагает (X-Ray, панель роботов и меню стали легче).</li>
+            </ul>
+          </div>
+          <div><b>1.1</b>
+            <ul>
+              <li>Добавлено: вкладка «Полёт и ТП», телепорт, Elytra+ и метки с лучами.</li>
+              <li>Добавлено: радар мобов, траектории, информация о блоке.</li>
+              <li>Добавлено: молния, взрывные стрелы, AutoShield, AutoSmelt, Magnet, BigHand.</li>
+              <li>Добавлено: звуки в меню.</li>
+            </ul>
+          </div>
+          <div><b>1.0</b>
+            <ul>
+              <li>Меню на Right Shift, HUD, полёт, X-Ray, бессмертие и ещё 25 функций.</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="box" aria-labelledby="inst3" style="display:grid;gap:22px" data-game="mc" hidden>
+    <h2 id="inst3">КАК УСТАНОВИТЬ</h2>
+    <ol class="steps">
+      <li><div>
+        <h3>Поставь NeoForge</h3>
+        <p>Проще всего через лаунчер со сборками, например GD Launcher или Prism: создай сборку Minecraft 1.21.1 с NeoForge.</p>
+      </div></li>
+      <li><div>
+        <h3>Скачай мод</h3>
+        <p>Нажми «Скачать Kub Client». Скачается файл <code class="inline">kubclient-1.3.0.jar</code>.</p>
+      </div></li>
+      <li><div>
+        <h3>Положи в папку mods</h3>
+        <p>В лаунчере открой папку сборки и перетащи файл в папку <code class="inline">mods</code>. Старую версию Kub Client удали.</p>
+      </div></li>
+      <li><div>
+        <h3>Играй</h3>
+        <p>Зайди в одиночный мир и нажми <kbd>Right Shift</kbd>. Для самолёта и танка ещё нужен мод Create Aeronautics.</p>
+      </div></li>
+    </ol>
+  </section>
+
   <section class="box support" aria-labelledby="sup">
     <h3 id="sup">* ПОДДЕРЖАТЬ АВТОРА</h3>
     <p>Все моды здесь бесплатные. Если тебе понравилось, скоро здесь можно будет поддержать автора, чтобы он делал больше модов.</p>
@@ -368,7 +453,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
   </section>
 
   <footer>
-    <p>Моды сделаны фанатом. Undertale и всё в ней принадлежат автору игры.</p>
+    <p>Моды сделаны фанатом. Undertale, Geometry Dash и Minecraft принадлежат их авторам.</p>
     <p>Используешь мод — сам отвечаешь за свои сохранения. Делай запасные копии.</p>
   </footer>
 </div>
@@ -494,6 +579,33 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     g.fillStyle = "#ffe03d"; g.fillRect(19, cy + 3, 3, 3);
     // хитбокс
     g.strokeStyle = "#5fe0ff"; g.lineWidth = 1; g.strokeRect(14.5, cy - 1.5, 12, 12);
+  }
+  function loop(t) { frame(t); requestAnimationFrame(loop); }
+  if (reduce) frame(0); else requestAnimationFrame(loop);
+})();
+
+// Танк Kub Client: едет туда-сюда и стреляет
+(function () {
+  var cv = document.getElementById("tank"), g = cv.getContext("2d");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function r(x, y, w, h, c) { g.fillStyle = c; g.fillRect(Math.round(x), Math.round(y), w, h); }
+  function frame(t) {
+    g.fillStyle = "#000"; g.fillRect(0, 0, 96, 96);
+    // трава и земля, как блоки Minecraft
+    for (var i = 0; i < 12; i++) { r(i * 8, 72, 8, 3, i % 2 ? "#4f9a2c" : "#5fb236"); r(i * 8, 75, 8, 21, i % 2 ? "#6b4a2b" : "#7a5532"); }
+    var x = 14 + Math.round(Math.sin(t / 900) * 8);
+    // гусеницы с бегущими траками
+    r(x, 62, 44, 10, "#222");
+    for (var k = 0; k < 6; k++) r(x + 2 + ((k * 8 + Math.floor(t / 60)) % 40), 64, 4, 6, "#555");
+    // корпус и башня
+    r(x - 2, 54, 48, 8, "#3f7a32"); r(x, 52, 44, 3, "#56a043");
+    r(x + 12, 44, 20, 10, "#3f7a32"); r(x + 14, 42, 16, 3, "#56a043");
+    r(x + 32, 47, 22, 3, "#8a8f99"); // ствол
+    r(x + 16, 34, 1, 8, "#ddd");     // антенна
+    // выстрел раз в 2 секунды
+    var p = (t % 2000) / 2000;
+    if (p < 0.12) { r(x + 54, 44, 5, 9, "#ffe03d"); r(x + 57, 46, 4, 5, "#ff9b21"); }
+    else if (p < 0.5) { var bx = x + 56 + (p - 0.12) * 120; r(bx, 47, 4, 3, "#ff9b21"); }
   }
   function loop(t) { frame(t); requestAnimationFrame(loop); }
   if (reduce) frame(0); else requestAnimationFrame(loop);

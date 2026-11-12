@@ -125,6 +125,12 @@ pre { margin: 0; padding: 14px; max-height: 340px; overflow: auto; font-size: 13
 .log b { font-family: var(--pixel); font-size: 11px; color: #ffe03d; }
 .log ul { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 
+.pack-group { display: grid; gap: 10px; }
+.pack-group h3 { color: #ffe03d; font-size: 11px; }
+.pack { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.pack li { border: 2px solid #2c2c38; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
+.pack a { font-weight: 700; overflow-wrap: anywhere; }
+.pack span { color: var(--dim); font-size: 14px; line-height: 1.4; }
 footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top: 4px solid var(--line); padding-top: 20px; }
 
 @media (max-width: 620px) {
@@ -436,6 +442,53 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
         <p>Зайди в одиночный мир и нажми <kbd>Right Shift</kbd>. Для самолёта и танка ещё нужен мод Create Aeronautics.</p>
       </div></li>
     </ol>
+  </section>
+
+  <section class="box" aria-labelledby="pack" style="display:grid;gap:22px" data-game="mc" hidden>
+    <h2 id="pack">НАБОР МОДОВ</h2>
+    <p>С этими модами Kub Client проверен в сборке автора. Kub Client работает и без них, а вот самолёт и танк требуют Create, Sable и Create Aeronautics. Все моды для <b>NeoForge 1.21.1</b>.</p>
+    <div class="pack-group"><h3>ОСНОВА</h3><ul class="pack">
+      <li><a href="https://modrinth.com/mod/create" target="_blank" rel="noopener">Create</a><span>Машины, моторы и механизмы</span></li>
+      <li><a href="https://modrinth.com/mod/sable" target="_blank" rel="noopener">Sable</a><span>Физика: постройки летают и ездят</span></li>
+      <li><a href="https://modrinth.com/mod/create-aeronautics" target="_blank" rel="noopener">Create Aeronautics</a><span>Корабли, самолёты и машины</span></li>
+      <li><a href="https://modrinth.com/mod/kotlin-for-forge" target="_blank" rel="noopener">Kotlin for Forge</a><span>Нужен другим модам</span></li>
+      <li><a href="https://modrinth.com/mod/architectury-api" target="_blank" rel="noopener">Architectury API</a><span>Нужен другим модам</span></li>
+      <li><a href="https://modrinth.com/mod/geckolib" target="_blank" rel="noopener">Geckolib</a><span>Анимации для модов</span></li>
+    </ul></div>
+    <div class="pack-group"><h3>ТЕХНИКА И ПОЛЁТЫ</h3><ul class="pack">
+      <li><a href="https://modrinth.com/mod/create-propulsion-simulated" target="_blank" rel="noopener">Create Propulsion: Simulated</a><span>Реактивные двигатели (Thruster)</span></li>
+      <li><a href="https://modrinth.com/mod/create-aeroworks" target="_blank" rel="noopener">Create: Aeroworks</a><span>Детали для самолётов</span></li>
+      <li><a href="https://modrinth.com/mod/drive-by-wire-sable" target="_blank" rel="noopener">Drive-By-Wire with Sable</a><span>Управление машинами по проводам</span></li>
+      <li><a href="https://modrinth.com/mod/drive-by-wiretypewriter" target="_blank" rel="noopener">Drive-By-Wire: Typewriter</a><span>Управление с клавиатуры</span></li>
+      <li><a href="https://modrinth.com/mod/create-connected" target="_blank" rel="noopener">Create: Connected</a><span>Полезные блоки для Create</span></li>
+      <li><a href="https://modrinth.com/mod/power-grid" target="_blank" rel="noopener">Create: Power Grid</a><span>Электричество</span></li>
+      <li><a href="https://modrinth.com/mod/tfmg-community-edition" target="_blank" rel="noopener">Create: TFMG Community Edition</a><span>Нефть, сталь и заводы</span></li>
+      <li><a href="https://modrinth.com/mod/create-radars" target="_blank" rel="noopener">Create: Radars</a><span>Радары</span></li>
+      <li><a href="https://modrinth.com/mod/create-deep-seas-lava-fix" target="_blank" rel="noopener">Create: Deep Seas - Lava Fix</a><span>Исправление для подлодок</span></li>
+      <li><a href="https://modrinth.com/mod/framedblocks" target="_blank" rel="noopener">FramedBlocks</a><span>Красивые блоки для постройки</span></li>
+    </ul></div>
+    <div class="pack-group"><h3>ОРУЖИЕ И БРОНЯ</h3><ul class="pack">
+      <li><a href="https://modrinth.com/mod/create-big-cannons" target="_blank" rel="noopener">Create Big Cannons</a><span>Большие пушки — их ставит танк</span></li>
+      <li><a href="https://modrinth.com/mod/rpl" target="_blank" rel="noopener">Ritchie's Projectile Library</a><span>Нужен для Big Cannons</span></li>
+      <li><a href="https://modrinth.com/mod/create-warnautics" target="_blank" rel="noopener">Create: Warnautics</a><span>Бомбы</span></li>
+      <li><a href="https://modrinth.com/mod/sab" target="_blank" rel="noopener">Create: Steel armor blocks</a><span>Стальная броня</span></li>
+      <li><a href="https://modrinth.com/mod/rolled-homongenous-forked" target="_blank" rel="noopener">Rolled Homogenous: Forked</a><span>Броня для кораблей и танков</span></li>
+      <li><a href="https://modrinth.com/mod/superb-warfare" target="_blank" rel="noopener">Superb Warfare</a><span>Оружие и боевая техника</span></li>
+      <li><a href="https://modrinth.com/mod/epic-fight" target="_blank" rel="noopener">Epic Fight</a><span>Бои как в Dark Souls</span></li>
+      <li><a href="https://modrinth.com/mod/pirates-doom" target="_blank" rel="noopener">Pirate's Doom</a><span>Пираты</span></li>
+    </ul></div>
+    <div class="pack-group"><h3>ГРАФИКА И КАРТА</h3><ul class="pack">
+      <li><a href="https://modrinth.com/mod/sodium" target="_blank" rel="noopener">Sodium</a><span>Больше FPS</span></li>
+      <li><a href="https://modrinth.com/mod/iris" target="_blank" rel="noopener">Iris Shaders</a><span>Шейдеры</span></li>
+      <li><a href="https://modrinth.com/mod/colorwheel" target="_blank" rel="noopener">Colorwheel</a><span>Шейдеры вместе с Create</span></li>
+      <li><a href="https://modrinth.com/mod/xaeros-world-map" target="_blank" rel="noopener">Xaero's World Map</a><span>Карта мира</span></li>
+      <li><a href="https://modrinth.com/mod/essential" target="_blank" rel="noopener">Essential Mod</a><span>Скриншоты, друзья, свои скины</span></li>
+    </ul></div>
+    <div class="pack-group"><h3>С CURSEFORGE</h3><ul class="pack">
+      <li><a href="https://www.curseforge.com/minecraft/search?search=let+it+walk" target="_blank" rel="noopener">Let it Walk!</a><span>Шагающие роботы — для вкладки «Роботы»</span></li>
+      <li><a href="https://www.curseforge.com/minecraft/search?search=compact+cannon+mount" target="_blank" rel="noopener">CBC: compact cannon mount</a><span>Маленькое крепление для пушки</span></li>
+    </ul></div>
+    <p class="note">Всего 31 мод и Kub Client. Ссылки ведут на страницы модов: там выбери версию NeoForge 1.21.1 и скачай. Удобнее ставить через GD Launcher или Prism — они сами подберут версии.</p>
   </section>
 
   <section class="box support" aria-labelledby="sup">

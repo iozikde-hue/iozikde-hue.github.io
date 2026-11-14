@@ -383,16 +383,27 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       </ul>
       <div class="box need">
         <h3>НУЖНО</h3>
-        <p>Minecraft 1.21.1 и NeoForge. Работает в одиночной игре.</p>
+        <p>Две версии. <b>NeoForge 1.21.1</b> — все 66 функций, техника работает с Create Aeronautics. <b>Fabric 26.3</b> (самый новый Minecraft) — 54 функции, без самолётов, танков и роботов; нужен ещё мод Fabric API. Работает в одиночной игре.</p>
       </div>
       <div class="dl">
-        <a class="btn big" href="kubclient-1.9.0.jar" download>СКАЧАТЬ KUB CLIENT</a>
+        <a class="btn big" href="kubclient-1.9.0.jar" download>СКАЧАТЬ ДЛЯ NEOFORGE 1.21.1</a>
         <span class="ver">JAR · 0,2 МБ</span>
+      </div>
+      <div class="dl">
+        <a class="btn big" href="kubclient-fabric-2.0.0.jar" download>СКАЧАТЬ ДЛЯ FABRIC 26.3</a>
+        <span class="ver">JAR · 0,14 МБ</span>
       </div>
       <p class="note">Только для своих миров. На чужих серверах читы запрещены, за них банят.</p>
       <details class="log">
         <summary>ЧТО НОВОГО</summary>
         <div class="log-list">
+          <div><b>2.0 · Fabric 26.3</b>
+            <ul>
+              <li>Kub Client теперь есть для Fabric и самой новой версии Minecraft 26.3.</li>
+              <li>54 функции: полёт, X-Ray, ESP, бессмертие, VeinMiner, радар, метки, Freecam и остальное. Без самолётов, танков, вертолётов и роботов — им нужен Create.</li>
+              <li>Меню само уменьшается, если окно маленькое.</li>
+            </ul>
+          </div>
           <div><b>1.9</b>
             <ul>
               <li>Бот Кубик переехал в отдельный мод <b>Kub Bot</b> — он ниже на этой странице. Теперь его можно скачать без читов.</li>
@@ -469,12 +480,12 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <h2 id="inst3">КАК УСТАНОВИТЬ</h2>
     <ol class="steps">
       <li><div>
-        <h3>Поставь NeoForge</h3>
-        <p>Проще всего через лаунчер со сборками, например GD Launcher или Prism: создай сборку Minecraft 1.21.1 с NeoForge.</p>
+        <h3>Создай сборку</h3>
+        <p>В лаунчере со сборками, например GD Launcher или Prism: Minecraft 1.21.1 с NeoForge — или Minecraft 26.3 с Fabric. Для Fabric в сборку добавь ещё мод Fabric API (в лаунчере он ищется по названию).</p>
       </div></li>
       <li><div>
         <h3>Скачай мод</h3>
-        <p>Нажми «Скачать Kub Client». Скачается файл <code class="inline">kubclient-1.9.0.jar</code>.</p>
+        <p>Нажми кнопку для своей сборки. Для NeoForge скачается <code class="inline">kubclient-1.9.0.jar</code>, для Fabric — <code class="inline">kubclient-fabric-2.0.0.jar</code>.</p>
       </div></li>
       <li><div>
         <h3>Положи в папку mods</h3>

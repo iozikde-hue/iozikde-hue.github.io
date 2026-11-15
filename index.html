@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=PT+Mono&display=swap">
+<script>try { var d = localStorage.getItem("design"); if (d) document.documentElement.dataset.design = d; } catch (e) {}</script>
 <style>
 /* Раскладка: одна узкая колонка из «боевых окон» — чёрный экран, белые толстые рамки, как в ролевой игре */
 :root {
@@ -21,12 +22,67 @@
   --panel: #0b0b10;
   --pixel: "Press Start 2P", "Courier New", monospace;
   --text: "PT Mono", "Courier New", monospace;
+  --gold: #ffe03d;
+  --chip: #1a1a22;
+  --sub: #2c2c38;
+  --code: #d9d6e6;
+  --glow: none;
+  --round: 0;
+  --pattern: none;
   color-scheme: dark;
 }
+/* Другие дизайны сайта: меняются только цвета и рамки */
+:root[data-design="mc"] {
+  --bg: #1d1a17; --panel: rgba(22, 18, 14, .9); --fg: #f4efe6; --dim: #b3aa9c; --line: #5a4a38;
+  --accent: #7ed957; --gold: #ffd84a; --soul: #ff4a3a; --flame: #6fe3ff;
+  --chip: #3a3128; --sub: #4a3f33; --code: #eee6d8;
+  --glow: 0 6px 0 rgba(0, 0, 0, .45);
+}
+:root[data-design="mc"] footer { background: var(--panel); padding: 16px 20px; }
+:root[data-design="mc"] body { background: var(--depth, none) top left / var(--depth-size, auto) repeat-y, #120f0d; image-rendering: pixelated; }
+:root[data-design="gd"] {
+  --bg: #1238d8; --panel: rgba(8, 18, 92, .82); --fg: #ffffff; --dim: #b9c6ff; --line: #000000;
+  --accent: #6dff3b; --gold: #ffe600; --soul: #ff3b5c; --flame: #3bf2ff;
+  --chip: #0b1d7a; --sub: #2a46c9; --code: #e3e9ff; --round: 14px;
+  --glow: 0 0 0 3px #ffffff, 0 8px 0 rgba(0, 0, 0, .35);
+  --pattern: linear-gradient(45deg, rgba(255,255,255,.06) 25%, transparent 25% 75%, rgba(255,255,255,.06) 75%), linear-gradient(45deg, rgba(255,255,255,.06) 25%, transparent 25% 75%, rgba(255,255,255,.06) 75%);
+}
+:root[data-design="gd"] body { background: var(--pattern), linear-gradient(180deg, #2a6bff, #3a1bb0 60%, #24086a) fixed; background-size: 96px 96px, 96px 96px, auto; background-position: 0 0, 48px 48px, 0 0; }
+:root[data-design="gd"] .btn, :root[data-design="gd"] .game, :root[data-design="gd"] .quiz-res { border-radius: 10px; box-shadow: 0 4px 0 #000; }
+:root[data-design="create"] {
+  --bg: #24221e; --panel: #3a3934; --fg: #f3ead7; --dim: #b2a98f; --line: #b8862f;
+  --accent: #e7b24c; --gold: #ffd27a; --soul: #e0553a; --flame: #8fd0e8;
+  --chip: #4a4842; --sub: #57544c; --code: #efe6cf;
+  --pattern: repeating-linear-gradient(0deg, #2b2620 0 30px, #24201b 30px 32px);
+}
+/* Латунные заклёпки по углам окон */
+:root[data-design="create"] .box {
+  background:
+    radial-gradient(circle at 10px 10px, #e7b24c 0 4px, #7a5a1e 4.5px 5.5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 10px) 10px, #e7b24c 0 4px, #7a5a1e 4.5px 5.5px, transparent 6px),
+    radial-gradient(circle at 10px calc(100% - 10px), #e7b24c 0 4px, #7a5a1e 4.5px 5.5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), #e7b24c 0 4px, #7a5a1e 4.5px 5.5px, transparent 6px),
+    var(--panel);
+  box-shadow: inset 0 0 0 3px #26241f, 0 6px 0 #15130f;
+}
+:root[data-design="create"] body { background-size: auto; }
+:root[data-design="white"] {
+  --bg: #ffffff; --panel: #ffffff; --fg: #18181b; --dim: #6b6b74; --line: #e2e2e6;
+  --accent: #2563eb; --gold: #1d4ed8; --soul: #dc2626; --flame: #2563eb;
+  --chip: #f1f1f4; --sub: #e2e2e6; --code: #27272a; --round: 12px;
+  --pixel: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+:root[data-design="white"] .box { border-width: 1px; box-shadow: 0 1px 3px rgba(0, 0, 0, .06); }
+:root[data-design="white"] h1, :root[data-design="white"] h2, :root[data-design="white"] h3 { font-weight: 700; letter-spacing: 0; }
+:root[data-design="white"] .btn, :root[data-design="white"] .game { border-width: 1px; border-radius: 8px; font-weight: 600; }
+
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body {
-  background: var(--bg);
+  background: var(--pattern), var(--bg);
+  background-size: 24px 24px;
   color: var(--fg);
   font-family: var(--text);
   font-size: 17px;
@@ -44,7 +100,7 @@ p { margin: 0; }
 a { color: var(--flame); }
 a:focus-visible, button:focus-visible { outline: 3px solid var(--soul); outline-offset: 3px; }
 
-.box { border: 4px solid var(--line); background: var(--panel); padding: 20px; }
+.box { border: 4px solid var(--line); background: var(--panel); padding: 20px; border-radius: var(--round); box-shadow: var(--glow); }
 
 /* Шапка */
 header { display: grid; gap: 22px; }
@@ -66,9 +122,18 @@ header { display: grid; gap: 22px; }
   background: var(--soul);
   clip-path: polygon(0 20%, 25% 0, 50% 20%, 75% 0, 100% 20%, 100% 50%, 50% 100%, 0 50%);
 }
-.game[aria-pressed="true"] { color: #ffe03d; border-color: #ffe03d; }
-.help-link { margin-left: auto; padding-left: 16px; text-decoration: none; color: var(--flame); border-color: var(--flame); }
-.help-link:hover { color: #ffe03d; border-color: #ffe03d; }
+.game[aria-pressed="true"] { color: var(--gold); border-color: var(--gold); }
+.help-link { padding-left: 16px; text-decoration: none; color: var(--flame); border-color: var(--flame); }
+.nav-side { margin-left: auto; display: flex; flex-wrap: wrap; gap: 12px; }
+.design-link { padding-left: 16px; color: var(--gold); border-color: var(--gold); }
+.designs { display: grid; gap: 16px; }
+.design-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.design-card { display: grid; gap: 10px; text-align: left; cursor: pointer; padding: 10px; background: var(--bg); color: var(--fg); border: 3px solid var(--sub); font-family: var(--pixel); font-size: 11px; letter-spacing: 1px; }
+.design-card[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
+.design-card:hover { border-color: var(--accent); }
+.swatch { height: 56px; border: 3px solid; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 6px; }
+.swatch i { display: block; }
+.help-link:hover { color: var(--gold); border-color: var(--gold); }
 .game[disabled] { color: var(--dim); border-color: var(--dim); cursor: default; padding-left: 16px; }
 
 /* Карточка мода */
@@ -95,7 +160,7 @@ kbd {
 .steps li > div { min-width: 0; display: grid; gap: 8px; }
 .steps li::before { content: counter(s); font-family: var(--pixel); font-size: 14px; color: var(--accent); padding-top: 3px; }
 code, pre { font-family: var(--text); }
-.inline { background: #1a1a22; padding: 1px 6px; word-break: break-all; }
+.inline { background: var(--chip); padding: 1px 6px; word-break: break-all; }
 .code-wrap { border: 4px solid var(--line); background: var(--bg); }
 .code-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 4px solid var(--line); }
 .code-bar span { font-family: var(--pixel); font-size: 10px; color: var(--dim); }
@@ -103,8 +168,8 @@ code, pre { font-family: var(--text); }
   font-family: var(--pixel); font-size: 12px; letter-spacing: 1px; cursor: pointer;
   background: var(--bg); color: var(--accent); border: 3px solid var(--accent); padding: 10px 14px;
 }
-.btn:hover { color: #ffe03d; border-color: #ffe03d; }
-pre { margin: 0; padding: 14px; max-height: 340px; overflow: auto; font-size: 13px; line-height: 1.5; color: #d9d6e6; white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: hidden; }
+.btn:hover { color: var(--gold); border-color: var(--gold); }
+pre { margin: 0; padding: 14px; max-height: 340px; overflow: auto; font-size: 13px; line-height: 1.5; color: var(--code); white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: hidden; }
 .warn { border-color: var(--soul); }
 .warn h3 { color: var(--soul); }
 
@@ -112,25 +177,25 @@ pre { margin: 0; padding: 14px; max-height: 340px; overflow: auto; font-size: 13
 .need h3 { color: var(--dim); font-size: 11px; }
 .note { color: var(--dim); font-size: 15px; }
 .dl { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
-.btn.big { text-decoration: none; display: inline-block; font-size: 13px; padding: 14px 18px; color: #ffe03d; border-color: #ffe03d; }
+.btn.big { text-decoration: none; display: inline-block; font-size: 13px; padding: 14px 18px; color: var(--gold); border-color: var(--gold); }
 .btn[disabled] { color: var(--dim); border-color: var(--dim); cursor: default; }
 .beta { font-family: var(--pixel); font-size: 9px; color: var(--soul); border: 2px solid var(--soul); padding: 2px 5px; vertical-align: 2px; white-space: nowrap; }
-.wave { font-family: var(--pixel); font-size: 11px; line-height: 1.8; color: #ffe03d; border-left: 4px solid #ffe03d; padding-left: 12px; }
+.wave { font-family: var(--pixel); font-size: 11px; line-height: 1.8; color: var(--gold); border-left: 4px solid var(--gold); padding-left: 12px; }
 .soon { border-style: dashed; border-color: var(--dim); color: var(--dim); display: grid; gap: 10px; }
 
-.support { border-color: #ffe03d; display: grid; gap: 14px; }
-.support h3 { color: #ffe03d; }
+.support { border-color: var(--gold); display: grid; gap: 14px; }
+.support h3 { color: var(--gold); }
 
 .log { border-top: 3px solid var(--line); padding-top: 12px; }
 .log summary { font-family: var(--pixel); font-size: 11px; color: var(--accent); cursor: pointer; }
 .log-list { display: grid; gap: 12px; margin-top: 12px; }
-.log b { font-family: var(--pixel); font-size: 11px; color: #ffe03d; }
+.log b { font-family: var(--pixel); font-size: 11px; color: var(--gold); }
 .log ul { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 
 .pack-group { display: grid; gap: 10px; }
-.pack-group h3 { color: #ffe03d; font-size: 11px; }
+.pack-group h3 { color: var(--gold); font-size: 11px; }
 .pack { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
-.pack li { border: 2px solid #2c2c38; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
+.pack li { border: 2px solid var(--sub); padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
 .pack a { font-weight: 700; overflow-wrap: anywhere; }
 .pack span { color: var(--dim); font-size: 14px; line-height: 1.4; }
 footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top: 4px solid var(--line); padding-top: 20px; }
@@ -139,11 +204,11 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
 .quiz { display: grid; gap: 16px; }
 .quiz-q { font-size: 19px; }
 .quiz-a { display: flex; flex-wrap: wrap; gap: 10px; }
-.quiz-res { border: 3px solid #ffe03d; padding: 14px; display: grid; gap: 12px; }
-.quiz-res h3 { color: #ffe03d; }
+.quiz-res { border: 3px solid var(--gold); padding: 14px; display: grid; gap: 12px; }
+.quiz-res h3 { color: var(--gold); }
 .quiz-back { background: none; border: 0; padding: 0; color: var(--dim); font-family: var(--pixel); font-size: 10px; cursor: pointer; justify-self: start; }
 .faq { display: grid; gap: 22px; }
-.faq details { border-top: 3px solid #2c2c38; padding-top: 12px; }
+.faq details { border-top: 3px solid var(--sub); padding-top: 12px; }
 .faq summary { font-family: var(--pixel); font-size: 11px; line-height: 1.8; color: var(--accent); cursor: pointer; }
 .faq details > div { margin-top: 10px; display: grid; gap: 8px; }
 
@@ -172,8 +237,17 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <button class="game" aria-pressed="true" type="button" data-show="ut">UNDERTALE</button>
     <button class="game" aria-pressed="false" type="button" data-show="gd">GEOMETRY DASH</button>
     <button class="game" aria-pressed="false" type="button" data-show="mc">MINECRAFT</button>
-    <a class="game help-link" href="#help">? ПОМОЩЬ</a>
+    <span class="nav-side">
+      <button class="game design-link" type="button" aria-expanded="false" aria-controls="designs">ДИЗАЙН</button>
+      <a class="game help-link" href="#help">? ПОМОЩЬ</a>
+    </span>
   </nav>
+
+  <section class="box designs" id="designs" aria-labelledby="dz" hidden>
+    <h2 id="dz">ДРУГИЕ ДИЗАЙНЫ САЙТА</h2>
+    <div class="design-list" id="design-list"></div>
+    <p class="note">Сайт запомнит выбранный дизайн.</p>
+  </section>
 
   <section class="box quiz" aria-labelledby="qz">
     <h2 id="qz">КАКОЙ МОД МНЕ НУЖЕН?</h2>
@@ -798,6 +872,104 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
   show("start");
 })();
 
+// Другие дизайны сайта
+(function () {
+  var D = [
+    ["", "АНДЕРТЕЙЛ", "#000000", "#ffffff", "#ff9b21", "#ffe03d"],
+    ["mc", "МАЙНКРАФТ", "#6b4a2b", "#5fa83a", "#7d7d7d", "#3a3a44"],
+    ["gd", "GEOMETRY DASH", "#1238d8", "#000000", "#6dff3b", "#ffe600"],
+    ["create", "CREATE", "#3a3934", "#b8862f", "#e7b24c", "#8a8a80"],
+    ["white", "БЕЛЫЙ", "#ffffff", "#e2e2e6", "#2563eb", "#18181b"]
+  ];
+  var root = document.documentElement, list = document.getElementById("design-list");
+  var panel = document.getElementById("designs"), open = document.querySelector(".design-link");
+  function cur() { return root.dataset.design || ""; }
+  D.forEach(function (d) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "design-card"; b.dataset.d = d[0];
+    var sw = document.createElement("span");
+    sw.className = "swatch"; sw.style.background = d[2]; sw.style.borderColor = d[3];
+    [d[3], d[4], d[5]].forEach(function (c) { var i = document.createElement("i"); i.style.background = c; sw.appendChild(i); });
+    b.appendChild(sw);
+    b.appendChild(document.createTextNode(d[1]));
+    b.addEventListener("click", function () {
+      if (d[0]) root.dataset.design = d[0]; else delete root.dataset.design;
+      try { localStorage.setItem("design", d[0]); } catch (e) {}
+      mark(); depth();
+    });
+    list.appendChild(b);
+  });
+  function mark() { list.querySelectorAll(".design-card").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.d === cur() ? "true" : "false"); }); }
+  mark();
+  open.addEventListener("click", function () {
+    panel.hidden = !panel.hidden;
+    open.setAttribute("aria-expanded", panel.hidden ? "false" : "true");
+    if (!panel.hidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  // Майнкрафт: фон — разрез земли на всю высоту страницы. Наверху трава, ниже земля,
+  // камень с рудами, глубинный сланец с алмазами, лава и бедрок в самом низу.
+  var B = 32, P = 8; // блок на экране 32px, в картинке 8×8 пикселей
+  var lastKey = "";
+  function rnd(seed) { var x = Math.sin(seed * 12.9898) * 43758.5453; return x - Math.floor(x); }
+  function shade(c, k) { return "rgb(" + c.map(function (v) { return Math.max(0, Math.min(255, Math.round(v * k))); }).join(",") + ")"; }
+  var COL = {
+    grass: [94, 160, 58], dirt: [125, 88, 56], stone: [125, 125, 125], deep: [72, 72, 80],
+    bedrock: [52, 52, 52], lava: [255, 128, 20], coal: [30, 30, 30], iron: [214, 172, 132],
+    gold: [250, 214, 60], red: [220, 30, 30], diamond: [80, 235, 230], emerald: [40, 210, 90]
+  };
+  function blockAt(r, c, rows) {
+    var f = r / rows, n = rnd(r * 131 + c * 17 + 7);
+    if (r === 0) return ["grass"];
+    if (r < 5) return ["dirt"];
+    if (r >= rows - 2) return ["bedrock"];
+    if (f > 0.9 && n < 0.18) return ["lava"];
+    var base = f < 0.6 ? "stone" : "deep";
+    var ore = null, o = rnd(r * 977 + c * 59 + 3);
+    if (o < 0.07) ore = "coal";
+    else if (o < 0.11) ore = "iron";
+    else if (f > 0.35 && o < 0.13) ore = "gold";
+    else if (f > 0.55 && o < 0.155) ore = "red";
+    else if (f > 0.7 && o < 0.17) ore = "diamond";
+    else if (f > 0.45 && f < 0.6 && o < 0.175) ore = "emerald";
+    return [base, ore];
+  }
+  function depth() {
+    if (cur() !== "mc") { root.style.removeProperty("--depth"); lastKey = ""; return; }
+    var h = Math.max(document.documentElement.scrollHeight, innerHeight);
+    var cols = Math.ceil(innerWidth / B) + 1, rows = Math.ceil(h / B) + 1;
+    var key = cols + "x" + rows;
+    if (key === lastKey) return;
+    lastKey = key;
+    var cv = document.createElement("canvas");
+    cv.width = cols * P; cv.height = rows * P;
+    var g = cv.getContext("2d");
+    for (var r = 0; r < rows; r++) for (var c = 0; c < cols; c++) {
+      var b = blockAt(r, c, rows), x0 = c * P, y0 = r * P;
+      for (var y = 0; y < P; y++) for (var x = 0; x < P; x++) {
+        var n = rnd(r * 7919 + c * 104729 + y * 31 + x * 7);
+        var col = COL[b[0]], k = 0.82 + n * 0.3;
+        if (b[0] === "grass" && y > 2 + (n < 0.4 ? 1 : 0)) col = COL.dirt;
+        if (b[0] === "lava") k = 0.85 + n * 0.35;
+        if (b[1] && n < 0.22 && x > 0 && x < P - 1 && y > 0 && y < P - 1) { col = COL[b[1]]; k = 0.9 + n * 0.4; }
+        if ((x === 0 || y === 0) && b[0] !== "lava") k *= 0.86;
+        g.fillStyle = shade(col, k);
+        g.fillRect(x0 + x, y0 + y, 1, 1);
+      }
+    }
+    // чем глубже, тем темнее
+    var grad = g.createLinearGradient(0, 0, 0, cv.height);
+    grad.addColorStop(0, "rgba(0,0,0,0)"); grad.addColorStop(1, "rgba(0,0,0,.45)");
+    g.fillStyle = grad; g.fillRect(0, 0, cv.width, cv.height);
+    root.style.setProperty("--depth", "url(" + cv.toDataURL() + ")");
+    root.style.setProperty("--depth-size", (cols * B) + "px " + (rows * B) + "px");
+  }
+  var t;
+  function later() { clearTimeout(t); t = setTimeout(depth, 150); }
+  addEventListener("resize", later);
+  if (window.ResizeObserver) new ResizeObserver(later).observe(document.body);
+  depth();
+})();
 // Вкладки игр
 (function () {
   var tabs = document.querySelectorAll(".game[data-show]");

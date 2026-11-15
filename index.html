@@ -133,6 +133,18 @@ pre { margin: 0; padding: 14px; max-height: 340px; overflow: auto; font-size: 13
 .pack span { color: var(--dim); font-size: 14px; line-height: 1.4; }
 footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top: 4px solid var(--line); padding-top: 20px; }
 
+/* Подсказка «какой мод нужен» и помощь */
+.quiz { display: grid; gap: 16px; }
+.quiz-q { font-size: 19px; }
+.quiz-a { display: flex; flex-wrap: wrap; gap: 10px; }
+.quiz-res { border: 3px solid #ffe03d; padding: 14px; display: grid; gap: 12px; }
+.quiz-res h3 { color: #ffe03d; }
+.quiz-back { background: none; border: 0; padding: 0; color: var(--dim); font-family: var(--pixel); font-size: 10px; cursor: pointer; justify-self: start; }
+.faq { display: grid; gap: 22px; }
+.faq details { border-top: 3px solid #2c2c38; padding-top: 12px; }
+.faq summary { font-family: var(--pixel); font-size: 11px; line-height: 1.8; color: var(--accent); cursor: pointer; }
+.faq details > div { margin-top: 10px; display: grid; gap: 8px; }
+
 @media (max-width: 620px) {
   .mod { grid-template-columns: 1fr; }
   .stage { width: 200px; }
@@ -159,6 +171,11 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <button class="game" aria-pressed="false" type="button" data-show="gd">GEOMETRY DASH</button>
     <button class="game" aria-pressed="false" type="button" data-show="mc">MINECRAFT</button>
   </nav>
+
+  <section class="box quiz" aria-labelledby="qz">
+    <h2 id="qz">КАКОЙ МОД МНЕ НУЖЕН?</h2>
+    <div id="quiz" aria-live="polite"></div>
+  </section>
 
   <section class="box mod" aria-labelledby="m1" data-game="ut">
     <div class="stage"><canvas id="knight" width="64" height="64" aria-label="Чёрный рыцарь с голубыми мечами"></canvas></div>
@@ -605,6 +622,35 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <p class="note">Всего 31 мод и Kub Client. Ссылки ведут на страницы модов: там выбери версию NeoForge 1.21.1 и скачай. Удобнее ставить через GD Launcher или Prism — они сами подберут версии.</p>
   </section>
 
+  <section class="box faq" aria-labelledby="help">
+    <h2 id="help">ПОМОЩЬ</h2>
+    <details><summary>Игра вылетает после установки мода</summary><div>
+      <p>Чаще всего мод не подходит к сборке. Файл для NeoForge не работает на Fabric, и наоборот. Kub Bot сейчас есть только для NeoForge 1.21.1.</p>
+      <p>Ещё проверь: в папке <code class="inline">mods</code> нет старой версии того же мода, а для Fabric в сборке стоит Fabric API.</p>
+    </div></details>
+    <details><summary>Мод стоит, но меню не открывается</summary><div>
+      <p>Kub Client — <kbd>Right Shift</kbd> (правый Shift). Клавишу можно поменять в игре: Настройки → Управление.</p>
+      <p>Мод-меню Undertale — <kbd>M</kbd>, на русской раскладке это Ь. AIR MOD — <kbd>=</kbd>, внутри уровня.</p>
+      <p>Kub Bot без меню: напиши в чат «бот помощь».</p>
+    </div></details>
+    <details><summary>Где папка mods?</summary><div>
+      <p>В GD Launcher или Prism нажми на сборку правой кнопкой и выбери «Открыть папку». Внутри будет папка <code class="inline">mods</code>. Если её нет, запусти сборку один раз — она появится.</p>
+    </div></details>
+    <details><summary>Работает ли на сервере?</summary><div>
+      <p>Kub Client — только в твоих одиночных мирах. На чужих серверах читы запрещены, за них банят.</p>
+      <p>Kub Bot работает на сервере, если там тоже стоит Kub Bot. Можно играть с другом по сети или через Essential.</p>
+    </div></details>
+    <details><summary>Мак или Виндовс?</summary><div>
+      <p>Моды для Minecraft и мод-меню Undertale работают и на Маке, и на Виндовс. AIR MOD для Geometry Dash — пока только на Маке.</p>
+    </div></details>
+    <details><summary>Как обновить мод?</summary><div>
+      <p>Удали старый файл из папки <code class="inline">mods</code> и положи новый. Что поменялось, написано в «Что нового» у каждого мода.</p>
+    </div></details>
+    <details><summary>Это безопасно?</summary><div>
+      <p>Скачивай моды только с этого сайта. Перед установкой делай копию мира или сохранения — так ничего не потеряешь.</p>
+    </div></details>
+  </section>
+
   <section class="box support" aria-labelledby="sup">
     <h3 id="sup">* ПОДДЕРЖАТЬ АВТОРА</h3>
     <p>Все моды здесь бесплатные. Если тебе понравилось, скоро здесь можно будет поддержать автора, чтобы он делал больше модов.</p>
@@ -698,6 +744,55 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
   }
   function loop(t) { frame(t); requestAnimationFrame(loop); }
   if (reduce) frame(0); else requestAnimationFrame(loop);
+})();
+
+// Подсказка «какой мод нужен»: вопрос → ответы → результат со ссылкой
+(function () {
+  var Q = {
+    start: { q: "Во что играешь?", a: [["UNDERTALE", "ut"], ["GEOMETRY DASH", "gd"], ["MINECRAFT", "mc"]] },
+    gd: { q: "Какой у тебя компьютер?", a: [["МАК", "air"], ["ВИНДОВС", "gdno"], ["ТЕЛЕФОН", "gdno"]] },
+    mc: { q: "Что хочешь?", a: [["ЧИТ-МЕНЮ", "cheat"], ["БОТА-ПОМОЩНИКА", "bot"]] },
+    cheat: { q: "Какая у тебя сборка?", a: [["NEOFORGE 1.21.1", "neo"], ["FABRIC 26.3", "fab"], ["ЕЩЁ НЕТ", "pick"]] },
+    pick: { q: "Нужны самолёты и танки из Create?", a: [["ДА", "neo"], ["НЕТ", "fab"]] },
+    bot: { q: "Какая у тебя сборка?", a: [["NEOFORGE 1.21.1", "kubbot"], ["FABRIC", "botno"], ["ЕЩЁ НЕТ", "kubbot"]] }
+  };
+  var R = {
+    ut: { t: "МОД-МЕНЮ ДЛЯ UNDERTALE", p: "Нужна своя купленная Undertale и программа UndertaleModTool.", tab: "ut", go: "inst" },
+    air: { t: "AIR MOD", p: "Нужны Geometry Dash 2.2081 из Стима и Geode 5.9.", href: "AIR-mod.zip", tab: "gd", go: "inst2" },
+    gdno: { t: "ПОКА НЕТ", p: "AIR MOD работает только на Маке. Версии для Виндовс и телефона пока нет." },
+    neo: { t: "KUB CLIENT ДЛЯ NEOFORGE", p: "Minecraft 1.21.1 с NeoForge. Для самолётов и танков поставь ещё Create Aeronautics.", href: "kubclient-1.9.0.jar", tab: "mc", go: "inst3" },
+    fab: { t: "KUB CLIENT ДЛЯ FABRIC", p: "Minecraft 26.3 с Fabric. В сборку добавь ещё мод Fabric API. Без самолётов, танков и роботов.", href: "kubclient-fabric-2.0.0.jar", tab: "mc", go: "inst3" },
+    kubbot: { t: "KUB BOT", p: "Minecraft 1.21.1 с NeoForge. Можно ставить вместе с Kub Client.", href: "kubbot-1.1.1.jar", tab: "mc", go: "m4" },
+    botno: { t: "ПОКА ТОЛЬКО NEOFORGE", p: "Kub Bot есть только для Minecraft 1.21.1 с NeoForge. Сделай для него отдельную сборку." }
+  };
+  var box = document.getElementById("quiz");
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+  function btn(cls, text, fn) { var b = el("button", cls, text); b.type = "button"; b.addEventListener("click", fn); return b; }
+  function show(id) {
+    box.textContent = "";
+    var wrap = el("div", "quiz");
+    if (Q[id]) {
+      wrap.appendChild(el("p", "quiz-q", "* " + Q[id].q));
+      var row = el("div", "quiz-a");
+      Q[id].a.forEach(function (a) { row.appendChild(btn("btn", a[0], function () { show(a[1]); })); });
+      wrap.appendChild(row);
+    } else {
+      var r = R[id], res = el("div", "quiz-res");
+      res.appendChild(el("h3", "", r.t));
+      res.appendChild(el("p", "", r.p));
+      var dl = el("div", "dl");
+      if (r.href) { var a = el("a", "btn big", "СКАЧАТЬ"); a.href = r.href; a.setAttribute("download", ""); dl.appendChild(a); }
+      if (r.tab) dl.appendChild(btn("btn", "КАК УСТАНОВИТЬ", function () {
+        document.querySelector('.game[data-show="' + r.tab + '"]').click();
+        document.getElementById(r.go).scrollIntoView({ behavior: "smooth" });
+      }));
+      if (dl.children.length) res.appendChild(dl);
+      wrap.appendChild(res);
+    }
+    if (id !== "start") wrap.appendChild(btn("quiz-back", "← ЗАНОВО", function () { show("start"); }));
+    box.appendChild(wrap);
+  }
+  show("start");
 })();
 
 // Вкладки игр

@@ -67,6 +67,8 @@ header { display: grid; gap: 22px; }
   clip-path: polygon(0 20%, 25% 0, 50% 20%, 75% 0, 100% 20%, 100% 50%, 50% 100%, 0 50%);
 }
 .game[aria-pressed="true"] { color: #ffe03d; border-color: #ffe03d; }
+.help-link { margin-left: auto; padding-left: 16px; text-decoration: none; color: var(--flame); border-color: var(--flame); }
+.help-link:hover { color: #ffe03d; border-color: #ffe03d; }
 .game[disabled] { color: var(--dim); border-color: var(--dim); cursor: default; padding-left: 16px; }
 
 /* Карточка мода */
@@ -170,6 +172,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <button class="game" aria-pressed="true" type="button" data-show="ut">UNDERTALE</button>
     <button class="game" aria-pressed="false" type="button" data-show="gd">GEOMETRY DASH</button>
     <button class="game" aria-pressed="false" type="button" data-show="mc">MINECRAFT</button>
+    <a class="game help-link" href="#help">? ПОМОЩЬ</a>
   </nav>
 
   <section class="box quiz" aria-labelledby="qz">
@@ -622,7 +625,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <p class="note">Всего 31 мод и Kub Client. Ссылки ведут на страницы модов: там выбери версию NeoForge 1.21.1 и скачай. Удобнее ставить через GD Launcher или Prism — они сами подберут версии.</p>
   </section>
 
-  <section class="box faq" aria-labelledby="help">
+  <section class="box faq" aria-labelledby="help" style="scroll-margin-top:16px">
     <h2 id="help">ПОМОЩЬ</h2>
     <details><summary>Игра вылетает после установки мода</summary><div>
       <p>Чаще всего мод не подходит к сборке. Файл для NeoForge не работает на Fabric, и наоборот. Kub Bot сейчас есть только для NeoForge 1.21.1.</p>
@@ -797,7 +800,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
 
 // Вкладки игр
 (function () {
-  var tabs = document.querySelectorAll(".game");
+  var tabs = document.querySelectorAll(".game[data-show]");
   tabs.forEach(function (b) {
     b.addEventListener("click", function () {
       tabs.forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });

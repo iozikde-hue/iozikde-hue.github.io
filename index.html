@@ -712,15 +712,16 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       <div class="mod-head">
         <h2 id="m5">KUB WEIRD</h2>
         <span class="free">БЕСПЛАТНО</span>
-        <span class="ver">ВЕРСИЯ 1.0</span>
+        <span class="ver">ВЕРСИЯ 1.1</span>
       </div>
-      <p>Мод для песочницы Sandboxels: <span class="knight-name">20 странных элементов</span> в новой вкладке «Странное». Плюс кнопка «Русский» наверху — переводит всю игру на русский одним нажатием.</p>
+      <p>Мод для песочницы Sandboxels: <span class="knight-name">30 странных элементов и приколов</span> в новой вкладке «Странное». Плюс кнопка «Русский» наверху — переводит всю игру на русский одним нажатием.</p>
       <ul class="keys">
         <li><kbd>EVIL</kbd><span>Кубовирус, Пожиратель, Мидас (всё в золото), Рандомайзер (всё в случайный элемент)</span></li>
         <li><kbd>UP</kbd><span>Антипесок падает вверх, Батут подбрасывает, Мыльный пузырь, Призрак летает сквозь всё</span></li>
         <li><kbd>FUN</kbd><span>Диско-жижа, Радужная змейка, Танцующий песок, Прыгучее желе, Кубик-прыгун</span></li>
         <li><kbd>BOOM</kbd><span>Конфетти-бомба, Взрывная вода, Ледяная лава, Облако сюрпризов</span></li>
         <li><kbd>???</kbd><span>Телепорт-пыль, Множитель, Магнит</span></li>
+        <li><kbd>LOL</kbd><span>Приколы: Говорящий камень, DVD-логотип (попадёт в угол — праздник), Кот, Резиновая уточка, Банановая кожура, Попкорн, Ненастоящая бомба, Банка с криком (трясёт экран), Стеснительный песок и Подозрительный пиксель — они убегают или замирают, когда наводишь мышку</span></li>
       </ul>
       <div class="box need">
         <h3>НУЖНО</h3>
@@ -728,11 +729,17 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       </div>
       <div class="dl">
         <a class="btn big" href="kub_weird.js" download>СКАЧАТЬ KUB WEIRD</a>
-        <span class="ver">JS · 16 КБ</span>
+        <span class="ver">JS · 27 КБ</span>
       </div>
       <details class="log">
         <summary>ЧТО НОВОГО</summary>
         <div class="log-list">
+          <div><b>1.1</b>
+            <ul>
+              <li>Добавлено: 10 приколов — Говорящий камень, DVD-логотип, Кот, Резиновая уточка, Банановая кожура, Попкорн, Ненастоящая бомба, Банка с криком, Стеснительный песок, Подозрительный пиксель.</li>
+              <li>Добавлено: элементы говорят — над ними появляются облачка с текстом.</li>
+            </ul>
+          </div>
           <div><b>1.0</b>
             <ul>
               <li>Первая версия: 20 странных элементов и кнопка «Русский / English».</li>
@@ -837,6 +844,8 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     "Кубик говорит: «бот помощь».",
     "Слот пуст. Пока что.",
     "Антипесок падает вверх. Это нормально.",
+    "DVD-логотип почти попал в угол...",
+    "Кот опять что-то уронил.",
     "AIR опять прошёл волну SC.",
     "AIR нажал 400 раз за секунду. Не устал.",
     "Крипер подошёл сзади... Кубик ударил первым.",
@@ -935,7 +944,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     bot: { q: "Какая у тебя сборка?", a: [["NEOFORGE 1.21.1", "kubbot"], ["FABRIC", "botno"], ["ЕЩЁ НЕТ", "kubbot"]] }
   };
   var R = {
-    sbx: { t: "KUB WEIRD", p: "20 странных элементов и кнопка «Русский». Нужен Sandboxels из Стима или браузерная версия.", href: "kub_weird.js", tab: "sbx", go: "inst5" },
+    sbx: { t: "KUB WEIRD", p: "30 странных элементов и приколов и кнопка «Русский». Нужен Sandboxels из Стима или браузерная версия.", href: "kub_weird.js", tab: "sbx", go: "inst5" },
     ut: { t: "МОД-МЕНЮ ДЛЯ UNDERTALE", p: "Нужна своя купленная Undertale и программа UndertaleModTool.", tab: "ut", go: "inst" },
     air: { t: "AIR MOD", p: "Нужны Geometry Dash 2.2081 из Стима и Geode 5.9.", href: "AIR-mod.zip", tab: "gd", go: "inst2" },
     gdno: { t: "ПОКА НЕТ", p: "AIR MOD работает только на Маке. Версии для Виндовс и телефона пока нет." },

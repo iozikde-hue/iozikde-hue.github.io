@@ -1,4 +1,4 @@
-// Kub Weird — 20 странных элементов для Sandboxels. Вкладка «Weird».
+// Kub Weird 1.1 — 30 странных элементов и приколов для Sandboxels. Вкладка «Weird».
 (function () {
   var CAT = "weird";
   function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
@@ -251,6 +251,200 @@
       for (var i = 0; i < 15; i++) if (!tryMove(p, p.x + (i % 3 === 0 ? d : 0), p.y - 1)) break;
     }
   };
+  // ---------- 1.1: приколы ----------
+
+  // Облачко с текстом над пикселем (не больше 6 сразу)
+  var bubbles = 0;
+  function say(pixel, ruText, enText) {
+    var cv = document.getElementById("game");
+    if (!cv || bubbles >= 6) return;
+    var r = cv.getBoundingClientRect(), k = r.width / width;
+    var d = document.createElement("div");
+    d.textContent = ru ? ruText : (enText || ruText);
+    d.style.cssText = "position:fixed;z-index:50;pointer-events:none;background:#fff;color:#000;font:bold 13px sans-serif;" +
+      "padding:3px 7px;border-radius:8px;border:2px solid #000;white-space:nowrap;transform:translate(-50%,-100%);transition:opacity .4s,margin .9s";
+    d.style.left = (r.left + (pixel.x + 0.5) * k) + "px";
+    d.style.top = (r.top + pixel.y * k - 4) + "px";
+    document.body.appendChild(d);
+    bubbles++;
+    setTimeout(function () { d.style.opacity = "0"; d.style.marginTop = "-12px"; }, 1200);
+    setTimeout(function () { d.remove(); bubbles--; }, 1700);
+  }
+  function pick(list) { var i = Math.floor(Math.random() * list.length); return list[i]; }
+  function shake() {
+    var cv = document.getElementById("game");
+    if (!cv || cv.dataset.shaking) return;
+    cv.dataset.shaking = "1";
+    var n = 0, t = setInterval(function () {
+      cv.style.transform = n < 14 ? "translate(" + (Math.random() * 12 - 6) + "px," + (Math.random() * 12 - 6) + "px)" : "";
+      if (++n > 14) { clearInterval(t); delete cv.dataset.shaking; }
+    }, 30);
+  }
+
+  // 21. Говорящий камень: иногда что-то говорит, от огня кричит
+  var ROCK = [["Я камень.", "I am a rock."], ["Скучно...", "Bored..."], ["Не трогай меня!", "Don't touch me!"], ["Кто тут?", "Who's there?"],
+    ["Я тоже хочу быть алмазом", "I want to be a diamond too"], ["Ой!", "Ouch!"], ["Мне 4 миллиарда лет", "I'm 4 billion years old"], ["zzz...", "zzz..."]];
+  elements.kub_talking_rock = {
+    name: "говорящий камень", color: ["#8d8d8d", "#757575"], category: CAT, state: "solid", density: 2600, tempHigh: 3000,
+    tick: function (pixel) {
+      if (pixel.temp > 60 && Math.random() < 0.05) say(pixel, "ГОРЯЧО!!!", "HOT!!!");
+      else if (Math.random() < 0.002) { var t = pick(ROCK); say(pixel, t[0], t[1]); }
+      powder(pixel);
+      doDefaults(pixel);
+    }
+  };
+
+  // 22. DVD-логотип: летает по диагонали, отскакивает и меняет цвет. В угол — праздник
+  elements.kub_dvd = {
+    name: "dvd-логотип", color: "#ff00ff", category: CAT, state: "solid", density: 1000, excludeRandom: true,
+    properties: { dx: 1, dy: 1 },
+    tick: function (pixel) {
+      var bx = !isEmpty(pixel.x + pixel.dx, pixel.y), by = !isEmpty(pixel.x, pixel.y + pixel.dy);
+      if (bx) pixel.dx = -pixel.dx;
+      if (by) pixel.dy = -pixel.dy;
+      if (bx || by) pixel.color = pixelColorPick(pixel, hsl(Math.random() * 360));
+      if (bx && by) { say(pixel, "УГОЛ!!!", "CORNER!!!"); explodeAt(pixel.x, pixel.y, 5, "confetti"); }
+      tryMove(pixel, pixel.x + pixel.dx, pixel.y + pixel.dy);
+    }
+  };
+
+  // 23. Банановая кожура: всё, что на неё падает, скользит далеко вбок
+  elements.kub_banana = {
+    name: "банановая кожура", color: ["#ffe135", "#fff176", "#c6a700"], category: CAT, state: "solid", density: 900,
+    tick: function (pixel) {
+      if (!isEmpty(pixel.x, pixel.y - 1, true)) {
+        var p = pixelMap[pixel.x][pixel.y - 1];
+        if (movable(p) && p.element !== "kub_banana") {
+          var d = Math.random() < 0.5 ? -1 : 1;
+          for (var i = 0; i < 10; i++) if (!tryMove(p, p.x + d, p.y)) break;
+          if (Math.random() < 0.05) say(pixel, "Вжух!", "Whoosh!");
+        }
+      }
+      powder(pixel);
+      doDefaults(pixel);
+    }
+  };
+
+  // 24. Резиновая уточка: плавает по воде и крякает
+  elements.kub_duck = {
+    name: "резиновая уточка", color: "#ffd600", category: CAT, state: "solid", density: 200,
+    properties: { dir: 1 },
+    tick: function (pixel) {
+      var below = isEmpty(pixel.x, pixel.y + 1, true) ? null : pixelMap[pixel.x][pixel.y + 1];
+      var inWater = below && elements[below.element].state === "liquid";
+      if (!isEmpty(pixel.x, pixel.y - 1, true) && elements[pixelMap[pixel.x][pixel.y - 1].element].state === "liquid") swapPixels(pixel, pixelMap[pixel.x][pixel.y - 1]);
+      else if (inWater) { if (Math.random() < 0.1 && !tryMove(pixel, pixel.x + pixel.dir, pixel.y)) pixel.dir = -pixel.dir; }
+      else powder(pixel);
+      if (Math.random() < 0.003) say(pixel, "Кря!", "Quack!");
+      doDefaults(pixel);
+    }
+  };
+
+  // 25. Стеснительный песок: убегает от мышки
+  elements.kub_shy_sand = {
+    name: "стеснительный песок", color: ["#f8bbd0", "#f48fb1"], category: CAT, state: "solid", density: 1500,
+    tick: function (pixel) {
+      if (window.mousePos && Math.abs(mousePos.x - pixel.x) < 8 && Math.abs(mousePos.y - pixel.y) < 8) {
+        var dx = pixel.x >= mousePos.x ? 1 : -1;
+        if (tryMove(pixel, pixel.x + dx, pixel.y) || tryMove(pixel, pixel.x + dx, pixel.y - 1)) {
+          if (Math.random() < 0.005) say(pixel, "Не смотри на меня!", "Don't look at me!");
+          return;
+        }
+      }
+      powder(pixel);
+      doDefaults(pixel);
+    }
+  };
+
+  // 26. Подозрительный пиксель: ползает, но замирает, когда на него наводишь мышку
+  elements.kub_sus = {
+    name: "подозрительный пиксель", color: "#c62828", category: CAT, state: "solid", density: 1000,
+    properties: { dir: 1 },
+    tick: function (pixel) {
+      if (window.mousePos && Math.abs(mousePos.x - pixel.x) < 6 && Math.abs(mousePos.y - pixel.y) < 6) {
+        if (!pixel.caught) { pixel.caught = true; say(pixel, pick(["Я ничего не делал", "Это не я!", "Я просто стою"]), "It wasn't me!"); }
+        return;
+      }
+      pixel.caught = false;
+      if (Math.random() < 0.02) pixel.dir = -pixel.dir;
+      if (!tryMove(pixel, pixel.x, pixel.y + 1)) tryMove(pixel, pixel.x + pixel.dir, pixel.y) || tryMove(pixel, pixel.x + pixel.dir, pixel.y - 1);
+      doDefaults(pixel);
+    }
+  };
+
+  // 27. Попкорн: нагрей — и он лопается и прыгает
+  elements.kub_popcorn = {
+    name: "попкорн", color: ["#ffcc80", "#ffb74d"], category: CAT, state: "solid", density: 700,
+    properties: { popped: false },
+    tick: function (pixel) {
+      if (!pixel.popped && pixel.temp > 150 && Math.random() < 0.1) {
+        pixel.popped = true;
+        pixel.color = pixelColorPick(pixel, "#fffde7");
+        for (var i = 0; i < 2; i++) { var c = rnd(squareCoords); if (isEmpty(pixel.x + c[0], pixel.y + c[1])) { createPixel("kub_popcorn", pixel.x + c[0], pixel.y + c[1]); var n = pixelMap[pixel.x + c[0]][pixel.y + c[1]]; if (n) { n.popped = true; n.color = pixelColorPick(n, "#fffde7"); } } }
+        for (var j = 0; j < 6; j++) if (!tryMove(pixel, pixel.x + (Math.random() < 0.5 ? -1 : 1), pixel.y - 1)) break;
+        if (Math.random() < 0.1) say(pixel, "ПОП!", "POP!");
+        return;
+      }
+      powder(pixel);
+      doDefaults(pixel);
+    }
+  };
+
+  // 28. Кот: гуляет, спихивает всё с края, мяукает и спит
+  elements.kub_cat = {
+    name: "кот", color: ["#ff8f00", "#ffa726"], category: CAT, state: "solid", density: 1100,
+    properties: { dir: 1, sleep: 0 },
+    tick: function (pixel) {
+      if (pixel.sleep > 0) { pixel.sleep--; if (pixel.sleep % 90 === 0) say(pixel, "zzz", "zzz"); doDefaults(pixel); return; }
+      if (Math.random() < 0.002) { pixel.sleep = 300; say(pixel, "Пора спать", "Nap time"); return; }
+      if (Math.random() < 0.003) say(pixel, pick(["Мяу", "Мяу?", "МЯУ!", "Мрр..."]), "Meow");
+      // спихивает соседний пиксель с края
+      var nx = pixel.x + pixel.dir;
+      if (!isEmpty(nx, pixel.y, true)) {
+        var p = pixelMap[nx][pixel.y];
+        if (movable(p) && p.element !== "kub_cat" && Math.random() < 0.3 && tryMove(p, nx + pixel.dir, pixel.y)) {
+          if (Math.random() < 0.05) say(pixel, "Упс", "Oops");
+        } else if (!tryMove(pixel, nx, pixel.y - 1)) pixel.dir = -pixel.dir;
+      }
+      if (!tryMove(pixel, pixel.x, pixel.y + 1) && Math.random() < 0.3) tryMove(pixel, pixel.x + pixel.dir, pixel.y);
+      doDefaults(pixel);
+    }
+  };
+
+  // 29. Ненастоящая бомба: тикает, все пугаются... а там только «БУМ» и конфетти
+  elements.kub_fake_bomb = {
+    name: "ненастоящая бомба", color: ["#212121", "#d50000"], category: CAT, state: "solid", density: 2000,
+    properties: { timer: 0 },
+    tick: function (pixel) {
+      pixel.timer++;
+      if (pixel.timer % 30 === 0 && pixel.timer < 120) say(pixel, String(4 - pixel.timer / 30) + "...", String(4 - pixel.timer / 30) + "...");
+      if (pixel.timer >= 120) {
+        say(pixel, "БУМ! ...шучу", "BOOM! ...just kidding");
+        explodeAt(pixel.x, pixel.y, 6, "confetti");
+        deletePixel(pixel.x, pixel.y);
+        return;
+      }
+      powder(pixel);
+      doDefaults(pixel);
+    }
+  };
+
+  // 30. Банка с криком: если что-то коснётся — «АААА!» и экран трясётся
+  elements.kub_scream_jar = {
+    name: "банка с криком", color: ["#80deea", "#e0f7fa"], category: CAT, state: "solid", density: 1500,
+    tick: function (pixel) {
+      var touched = false;
+      near(pixel, adjacentCoords, function (p) { if (p.element !== "kub_scream_jar" && p.element !== "wall") touched = true; });
+      if (touched && (!pixel.last || pixelTicks - pixel.last > 60)) {
+        pixel.last = pixelTicks;
+        say(pixel, "АААААААА!!!", "AAAAAAAA!!!");
+        shake();
+      }
+      powder(pixel);
+      doDefaults(pixel);
+    }
+  };
+
   // Названия: по-русски, если в игре выбран русский язык, иначе по-английски
   var EN = {
     kub_virus: "cube virus",
@@ -274,7 +468,17 @@
     kub_ice_lava: "ice lava",
     kub_boom_water: "boom water",
     kub_midas: "midas",
-    kub_trampoline: "trampoline"
+    kub_trampoline: "trampoline",
+    kub_talking_rock: "talking rock",
+    kub_dvd: "dvd logo",
+    kub_banana: "banana peel",
+    kub_duck: "rubber duck",
+    kub_shy_sand: "shy sand",
+    kub_sus: "suspicious pixel",
+    kub_popcorn: "popcorn",
+    kub_cat: "cat",
+    kub_fake_bomb: "fake bomb",
+    kub_scream_jar: "scream jar"
   };
   // Мод грузится раньше языка игры: если выбран английский, отменяем язык из Стима
   if (window.settings && settings.lang === "en" && window.initialData) delete initialData.langCode;

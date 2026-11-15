@@ -237,6 +237,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <button class="game" aria-pressed="true" type="button" data-show="ut">UNDERTALE</button>
     <button class="game" aria-pressed="false" type="button" data-show="gd">GEOMETRY DASH</button>
     <button class="game" aria-pressed="false" type="button" data-show="mc">MINECRAFT</button>
+    <button class="game" aria-pressed="false" type="button" data-show="sbx">SANDBOXELS</button>
     <span class="nav-side">
       <button class="game design-link" type="button" aria-expanded="false" aria-controls="designs">ДИЗАЙН</button>
       <a class="game help-link" href="#help">? ПОМОЩЬ</a>
@@ -699,6 +700,68 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <p class="note">Всего 31 мод и Kub Client. Ссылки ведут на страницы модов: там выбери версию NeoForge 1.21.1 и скачай. Удобнее ставить через GD Launcher или Prism — они сами подберут версии.</p>
   </section>
 
+  <section class="box mod" aria-labelledby="m5" data-game="sbx" hidden>
+    <div class="stage"><svg width="96" height="96" viewBox="0 0 8 8" shape-rendering="crispEdges" role="img" aria-label="Значок Kub Weird: разноцветные пиксели падают в кучку">
+      <rect x="1" y="0" width="1" height="1" fill="#b388ff"/><rect x="5" y="1" width="1" height="1" fill="#3bff7a"/>
+      <rect x="3" y="2" width="1" height="1" fill="#ff4081"/><rect x="6" y="3" width="1" height="1" fill="#ffd740"/>
+      <rect x="2" y="4" width="1" height="1" fill="#00e5ff"/>
+      <rect x="2" y="6" width="4" height="1" fill="#ffd700"/><rect x="1" y="7" width="6" height="1" fill="#ff6fb5"/>
+      <rect x="3" y="5" width="2" height="1" fill="#3b7bff"/>
+    </svg></div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h2 id="m5">KUB WEIRD</h2>
+        <span class="free">БЕСПЛАТНО</span>
+        <span class="ver">ВЕРСИЯ 1.0</span>
+      </div>
+      <p>Мод для песочницы Sandboxels: <span class="knight-name">20 странных элементов</span> в новой вкладке «Странное». Плюс кнопка «Русский» наверху — переводит всю игру на русский одним нажатием.</p>
+      <ul class="keys">
+        <li><kbd>EVIL</kbd><span>Кубовирус, Пожиратель, Мидас (всё в золото), Рандомайзер (всё в случайный элемент)</span></li>
+        <li><kbd>UP</kbd><span>Антипесок падает вверх, Батут подбрасывает, Мыльный пузырь, Призрак летает сквозь всё</span></li>
+        <li><kbd>FUN</kbd><span>Диско-жижа, Радужная змейка, Танцующий песок, Прыгучее желе, Кубик-прыгун</span></li>
+        <li><kbd>BOOM</kbd><span>Конфетти-бомба, Взрывная вода, Ледяная лава, Облако сюрпризов</span></li>
+        <li><kbd>???</kbd><span>Телепорт-пыль, Множитель, Магнит</span></li>
+      </ul>
+      <div class="box need">
+        <h3>НУЖНО</h3>
+        <p>Sandboxels из Стима (Мак или Виндовс) или сайт игры в браузере.</p>
+      </div>
+      <div class="dl">
+        <a class="btn big" href="kub_weird.js" download>СКАЧАТЬ KUB WEIRD</a>
+        <span class="ver">JS · 16 КБ</span>
+      </div>
+      <details class="log">
+        <summary>ЧТО НОВОГО</summary>
+        <div class="log-list">
+          <div><b>1.0</b>
+            <ul>
+              <li>Первая версия: 20 странных элементов и кнопка «Русский / English».</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="box" aria-labelledby="inst5" style="display:grid;gap:22px" data-game="sbx" hidden>
+    <h2 id="inst5">КАК УСТАНОВИТЬ</h2>
+    <ol class="steps">
+      <li><div>
+        <h3>Скачай мод</h3>
+        <p>Нажми «Скачать Kub Weird» — скачается файл <code class="inline">kub_weird.js</code>.</p>
+      </div></li>
+      <li><div>
+        <h3>Положи в папку mods</h3>
+        <p>На Маке: в Finder нажми Cmd+Shift+G и вставь <code class="inline">~/Library/Preferences/sandboxels/mods</code>. На Виндовс: Win+R и <code class="inline">%APPDATA%\sandboxels\mods</code>. Перетащи туда файл.</p>
+      </div></li>
+      <li><div>
+        <h3>Играй</h3>
+        <p>Запусти Sandboxels заново. Внизу появится вкладка «Weird» (на русском — «Странное»), а наверху — кнопка «Русский».</p>
+      </div></li>
+    </ol>
+    <p class="note">В браузерной версии: открой «Mods», вставь <code class="inline">https://iozikde-hue.github.io/kub_weird.js</code> и нажми «Add».</p>
+  </section>
+
   <section class="box faq" aria-labelledby="help" style="scroll-margin-top:16px">
     <h2 id="help">ПОМОЩЬ</h2>
     <details><summary>Игра вылетает после установки мода</summary><div>
@@ -718,7 +781,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       <p>Kub Bot работает на сервере, если там тоже стоит Kub Bot. Можно играть с другом по сети или через Essential.</p>
     </div></details>
     <details><summary>Мак или Виндовс?</summary><div>
-      <p>Моды для Minecraft и мод-меню Undertale работают и на Маке, и на Виндовс. AIR MOD для Geometry Dash — пока только на Маке.</p>
+      <p>Моды для Minecraft, мод-меню Undertale и Kub Weird для Sandboxels работают и на Маке, и на Виндовс. AIR MOD для Geometry Dash — пока только на Маке.</p>
     </div></details>
     <details><summary>Как обновить мод?</summary><div>
       <p>Удали старый файл из папки <code class="inline">mods</code> и положи новый. Что поменялось, написано в «Что нового» у каждого мода.</p>
@@ -773,6 +836,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     "Священный рыцарь парит над землёй.",
     "Кубик говорит: «бот помощь».",
     "Слот пуст. Пока что.",
+    "Антипесок падает вверх. Это нормально.",
     "AIR опять прошёл волну SC.",
     "AIR нажал 400 раз за секунду. Не устал.",
     "Крипер подошёл сзади... Кубик ударил первым.",
@@ -863,7 +927,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
 // Подсказка «какой мод нужен»: вопрос → ответы → результат со ссылкой
 (function () {
   var Q = {
-    start: { q: "Во что играешь?", a: [["UNDERTALE", "ut"], ["GEOMETRY DASH", "gd"], ["MINECRAFT", "mc"]] },
+    start: { q: "Во что играешь?", a: [["UNDERTALE", "ut"], ["GEOMETRY DASH", "gd"], ["MINECRAFT", "mc"], ["SANDBOXELS", "sbx"]] },
     gd: { q: "Какой у тебя компьютер?", a: [["МАК", "air"], ["ВИНДОВС", "gdno"], ["ТЕЛЕФОН", "gdno"]] },
     mc: { q: "Что хочешь?", a: [["ЧИТ-МЕНЮ", "cheat"], ["БОТА-ПОМОЩНИКА", "bot"]] },
     cheat: { q: "Какая у тебя сборка?", a: [["NEOFORGE 1.21.1", "neo"], ["FABRIC 26.3", "fab"], ["ЕЩЁ НЕТ", "pick"]] },
@@ -871,6 +935,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     bot: { q: "Какая у тебя сборка?", a: [["NEOFORGE 1.21.1", "kubbot"], ["FABRIC", "botno"], ["ЕЩЁ НЕТ", "kubbot"]] }
   };
   var R = {
+    sbx: { t: "KUB WEIRD", p: "20 странных элементов и кнопка «Русский». Нужен Sandboxels из Стима или браузерная версия.", href: "kub_weird.js", tab: "sbx", go: "inst5" },
     ut: { t: "МОД-МЕНЮ ДЛЯ UNDERTALE", p: "Нужна своя купленная Undertale и программа UndertaleModTool.", tab: "ut", go: "inst" },
     air: { t: "AIR MOD", p: "Нужны Geometry Dash 2.2081 из Стима и Geode 5.9.", href: "AIR-mod.zip", tab: "gd", go: "inst2" },
     gdno: { t: "ПОКА НЕТ", p: "AIR MOD работает только на Маке. Версии для Виндовс и телефона пока нет." },

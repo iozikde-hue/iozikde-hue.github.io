@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Бесплатные фанатские моды: мод-меню для Undertale с Чёрным рыцарем, AIR MOD — бот для Geometry Dash и Kub Client — чит-меню для Minecraft 1.21.1 NeoForge с танком и истребителем.">
+<meta name="description" content="Бесплатные фанатские моды: мод-меню для Undertale с Чёрным рыцарем, AIR MOD — бот для Geometry Dash на Мак и Виндовс и Kub Client — чит-меню для Minecraft 1.21.1 NeoForge с танком и истребителем.">
 <title>Кузница модов — читы и моды для Minecraft, Geometry Dash и Undertale на Мак</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -402,7 +402,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <div class="mod-body">
       <div class="mod-head">
         <h2 id="m2">AIR MOD</h2>
-        <span class="ver">ВЕРСИЯ 1.0 · ТОЛЬКО МАК</span>
+        <span class="ver">ВЕРСИЯ 1.1 · МАК И ВИНДОВС</span>
       </div>
       <p class="wave">Лучше всего для испытаний на волну</p>
       <p>Бот, который <span class="knight-name">сам проходит уровни</span>. Он считает физику игры и заранее прокладывает путь через весь уровень, а на экране рисует траекторию и хитбоксы.</p>
@@ -416,12 +416,33 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       <p>Пока не умеет: робот и качели.</p>
       <div class="box need">
         <h3>НУЖНО</h3>
-        <p>Geometry Dash 2.2081 для Мака и загрузчик модов Geode 5.9.</p>
+        <p>Мак: Geometry Dash 2.2081 и загрузчик модов Geode 5.9.</p>
+        <p>Виндовс: Geometry Dash 2.2091 и Geode 6.0.0-alpha.2.</p>
       </div>
       <div class="dl">
-        <a class="btn big" id="dl-gd" href="AIR-mod.zip" download>СКАЧАТЬ AIR MOD</a>
-        <span class="ver" id="dl-gd-msg">ZIP · 0,7 МБ</span>
+        <a class="btn big" id="dl-gd" href="AIR-mod.zip" download>СКАЧАТЬ ДЛЯ МАКА</a>
+        <span class="ver" id="dl-gd-msg">ВЕРСИЯ 1.0 · ZIP · 0,7 МБ</span>
       </div>
+      <div class="dl">
+        <a class="btn big" id="dl-gd-win" href="AIR-mod-windows-1.1.zip" download>СКАЧАТЬ ДЛЯ ВИНДОВС</a>
+        <span class="ver">ВЕРСИЯ 1.1 <span class="beta">БЕТА</span> · ZIP · 0,5 МБ</span>
+      </div>
+      <details class="log">
+        <summary>ЧТО НОВОГО</summary>
+        <div class="log-list">
+          <div><b>1.1</b>
+            <ul>
+              <li>Добавлено: версия для Виндовс <span class="beta">БЕТА</span>. Пока не проверена в игре, бот может ошибаться или не запуститься.</li>
+              <li>Мод переделан под Geometry Dash 2.2091 и Geode 6.</li>
+            </ul>
+          </div>
+          <div><b>1.0</b>
+            <ul>
+              <li>Первая версия: бот для Мака — кубик, корабль, волна, НЛО, паук, шар, порталы и кнопка «RU / EN».</li>
+            </ul>
+          </div>
+        </div>
+      </details>
       <p class="note">Мод для тренировки и для интереса: не выдавай прохождения бота за свои рекорды.</p>
     </div>
   </section>
@@ -431,15 +452,16 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <ol class="steps">
       <li><div>
         <h3>Поставь Geode</h3>
-        <p>Это бесплатный загрузчик модов: <a href="https://geode-sdk.org" target="_blank" rel="noopener">сайт Geode</a>. Нужна версия 5.9 и Geometry Dash 2.2081 из Стима на Маке.</p>
+        <p>Это бесплатный загрузчик модов: <a href="https://geode-sdk.org" target="_blank" rel="noopener">сайт Geode</a>. На Маке нужна версия 5.9 и Geometry Dash 2.2081 из Стима. На Виндовс — Geode 6.0.0-alpha.2 и Geometry Dash 2.2091 из Стима.</p>
       </div></li>
       <li><div>
         <h3>Скачай и распакуй</h3>
-        <p>Нажми «Скачать AIR MOD» и открой архив двойным нажатием. Внутри файл <code class="inline">demid.gdaibridge.geode</code>.</p>
+        <p>Нажми «Скачать для Мака» или «Скачать для Виндовс» и открой архив двойным нажатием. Внутри файл <code class="inline">demid.gdaibridge.geode</code>.</p>
       </div></li>
       <li><div>
         <h3>Открой папку модов</h3>
         <p>В Стиме нажми правой кнопкой на Geometry Dash → «Управление» → «Просмотреть локальные файлы». Нажми правой кнопкой на <code class="inline">Geometry Dash.app</code> → «Показать содержимое пакета» и открой <code class="inline">Contents/geode/mods</code>.</p>
+        <p>На Виндовс там же, в «Просмотреть локальные файлы», рядом с <code class="inline">GeometryDash.exe</code> открой папку <code class="inline">geode/mods</code>.</p>
       </div></li>
       <li><div>
         <h3>Перетащи мод</h3>
@@ -452,7 +474,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     </ol>
     <div class="box warn">
       <h3>* ВНИМАНИЕ</h3>
-      <p>Мод проверен только на одном Маке. На Виндовс и телефонах он не работает. Чтобы удалить мод, убери файл из папки модов.</p>
+      <p>Мод проверен только на одном Маке. Версия для Виндовс — бета, в игре её ещё не проверяли. На телефонах мод не работает. Чтобы удалить мод, убери файл из папки модов.</p>
     </div>
   </section>
 
@@ -788,7 +810,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       <p>Kub Bot работает на сервере, если там тоже стоит Kub Bot. Можно играть с другом по сети или через Essential.</p>
     </div></details>
     <details><summary>Мак или Виндовс?</summary><div>
-      <p>Моды для Minecraft, мод-меню Undertale и Kub Weird для Sandboxels работают и на Маке, и на Виндовс. AIR MOD для Geometry Dash — пока только на Маке.</p>
+      <p>Моды для Minecraft, мод-меню Undertale и Kub Weird для Sandboxels работают и на Маке, и на Виндовс. AIR MOD для Geometry Dash — на Маке и на Виндовс (бета).</p>
     </div></details>
     <details><summary>Как обновить мод?</summary><div>
       <p>Удали старый файл из папки <code class="inline">mods</code> и положи новый. Что поменялось, написано в «Что нового» у каждого мода.</p>
@@ -937,7 +959,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
 (function () {
   var Q = {
     start: { q: "Во что играешь?", a: [["UNDERTALE", "ut"], ["GEOMETRY DASH", "gd"], ["MINECRAFT", "mc"], ["SANDBOXELS", "sbx"]] },
-    gd: { q: "Какой у тебя компьютер?", a: [["МАК", "air"], ["ВИНДОВС", "gdno"], ["ТЕЛЕФОН", "gdno"]] },
+    gd: { q: "Какой у тебя компьютер?", a: [["МАК", "air"], ["ВИНДОВС", "airwin"], ["ТЕЛЕФОН", "gdno"]] },
     mc: { q: "Что хочешь?", a: [["ЧИТ-МЕНЮ", "cheat"], ["БОТА-ПОМОЩНИКА", "bot"]] },
     cheat: { q: "Какая у тебя сборка?", a: [["NEOFORGE 1.21.1", "neo"], ["FABRIC 26.3", "fab"], ["ЕЩЁ НЕТ", "pick"]] },
     pick: { q: "Нужны самолёты и танки из Create?", a: [["ДА", "neo"], ["НЕТ", "fab"]] },
@@ -947,7 +969,8 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     sbx: { t: "KUB WEIRD", p: "30 странных элементов и приколов и кнопка «Русский». Нужен Sandboxels из Стима или браузерная версия.", href: "kub_weird.js", tab: "sbx", go: "inst5" },
     ut: { t: "МОД-МЕНЮ ДЛЯ UNDERTALE", p: "Нужна своя купленная Undertale и программа UndertaleModTool.", tab: "ut", go: "inst" },
     air: { t: "AIR MOD", p: "Нужны Geometry Dash 2.2081 из Стима и Geode 5.9.", href: "AIR-mod.zip", tab: "gd", go: "inst2" },
-    gdno: { t: "ПОКА НЕТ", p: "AIR MOD работает только на Маке. Версии для Виндовс и телефона пока нет." },
+    airwin: { t: "AIR MOD ДЛЯ ВИНДОВС (БЕТА)", p: "Нужны Geometry Dash 2.2091 из Стима и Geode 6.0.0-alpha.2. Версия бета: в игре ещё не проверена.", href: "AIR-mod-windows-1.1.zip", tab: "gd", go: "inst2" },
+    gdno: { t: "ПОКА НЕТ", p: "AIR MOD работает на Маке и Виндовс. Версии для телефона пока нет." },
     neo: { t: "KUB CLIENT ДЛЯ NEOFORGE", p: "Minecraft 1.21.1 с NeoForge. Для самолётов и танков поставь ещё Create Aeronautics.", href: "kubclient-1.9.0.jar", tab: "mc", go: "inst3" },
     fab: { t: "KUB CLIENT ДЛЯ FABRIC", p: "Minecraft 26.3 с Fabric. В сборку добавь ещё мод Fabric API. Без самолётов, танков и роботов.", href: "kubclient-fabric-2.0.0.jar", tab: "mc", go: "inst3" },
     kubbot: { t: "KUB BOT", p: "Minecraft 1.21.1 с NeoForge. Можно ставить вместе с Kub Client.", href: "kubbot-1.1.1.jar", tab: "mc", go: "m4" },

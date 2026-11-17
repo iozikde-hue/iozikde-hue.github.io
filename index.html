@@ -123,9 +123,6 @@ header { display: grid; gap: 22px; }
   clip-path: polygon(0 20%, 25% 0, 50% 20%, 75% 0, 100% 20%, 100% 50%, 50% 100%, 0 50%);
 }
 .game[aria-pressed="true"] { color: var(--gold); border-color: var(--gold); }
-.help-link { padding-left: 16px; text-decoration: none; color: var(--flame); border-color: var(--flame); }
-.nav-side { margin-left: auto; display: flex; flex-wrap: wrap; gap: 12px; }
-.design-link { padding-left: 16px; color: var(--gold); border-color: var(--gold); }
 .designs { display: grid; gap: 16px; }
 .design-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 .design-card { display: grid; gap: 10px; text-align: left; cursor: pointer; padding: 10px; background: var(--bg); color: var(--fg); border: 3px solid var(--sub); font-family: var(--pixel); font-size: 11px; letter-spacing: 1px; }
@@ -133,7 +130,6 @@ header { display: grid; gap: 22px; }
 .design-card:hover { border-color: var(--accent); }
 .swatch { height: 56px; border: 3px solid; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 6px; }
 .swatch i { display: block; }
-.help-link:hover { color: var(--gold); border-color: var(--gold); }
 .game[disabled] { color: var(--dim); border-color: var(--dim); cursor: default; padding-left: 16px; }
 
 /* Карточка мода */
@@ -212,6 +208,57 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
 .faq summary { font-family: var(--pixel); font-size: 11px; line-height: 1.8; color: var(--accent); cursor: pointer; }
 .faq details > div { margin-top: 10px; display: grid; gap: 8px; }
 
+/* Выдвижная панель слева: какой мод нужен, помощь, дизайн */
+body { padding-top: 84px; }
+.menu-btn {
+  position: fixed; z-index: 30; top: 16px; left: max(16px, env(safe-area-inset-left, 0px));
+  display: inline-flex; align-items: center; gap: 10px; cursor: pointer;
+  font-family: var(--pixel); font-size: 12px; letter-spacing: 1px;
+  background: var(--bg); color: var(--gold); border: 3px solid var(--gold); padding: 10px 14px;
+  border-radius: var(--round); box-shadow: 0 4px 0 rgba(0, 0, 0, .4);
+}
+.menu-btn:hover { color: var(--accent); border-color: var(--accent); }
+.bars { display: grid; gap: 3px; }
+.bars i { display: block; width: 16px; height: 3px; background: currentColor; }
+.scrim { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, .6); }
+.drawer {
+  position: fixed; z-index: 50; top: 0; left: 0; bottom: 0; width: min(440px, 100%);
+  background: var(--bg); border-right: 4px solid var(--line); overflow-y: auto; overscroll-behavior: contain;
+  padding: 16px max(16px, env(safe-area-inset-left, 0px)) 32px; display: grid; align-content: start; gap: 18px;
+  transform: translateX(-100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s;
+}
+.drawer.open { transform: none; visibility: visible; transition: transform .25s ease; }
+.drawer-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.drawer-top span { font-family: var(--pixel); font-size: 13px; color: var(--gold); letter-spacing: 1px; }
+.drawer-x { width: 44px; height: 44px; cursor: pointer; font-family: var(--pixel); font-size: 14px; background: var(--bg); color: var(--fg); border: 3px solid var(--line); border-radius: var(--round); }
+.drawer-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.drawer-tabs button {
+  font-family: var(--pixel); font-size: 10px; line-height: 1.5; padding: 10px 4px; cursor: pointer;
+  background: var(--bg); color: var(--accent); border: 3px solid var(--accent); border-radius: var(--round);
+}
+.drawer-tabs button[aria-selected="true"] { color: var(--gold); border-color: var(--gold); }
+#drawer .box { border: 0; padding: 0; background: none; box-shadow: none; }
+
+/* Шаги установки: галочки и копирование путей */
+.progress { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-family: var(--pixel); font-size: 10px; color: var(--dim); }
+.meter { flex: 1 1 120px; height: 12px; border: 2px solid var(--dim); }
+.meter i { display: block; height: 100%; width: 0; background: var(--gold); transition: width .2s; }
+.progress.all { color: var(--gold); }
+.done { display: inline-flex; align-items: center; gap: 10px; justify-self: start; cursor: pointer; padding: 4px 0; font-family: var(--pixel); font-size: 10px; color: var(--dim); }
+.done input { width: 22px; height: 22px; margin: 0; cursor: pointer; accent-color: var(--gold); }
+.steps li.is-done .done { color: var(--gold); }
+.steps li.is-done > div > :not(.done) { opacity: .5; }
+.steps li.is-done::before { content: "✓"; color: var(--gold); }
+.copy-mini {
+  margin-left: 6px; vertical-align: 1px; cursor: pointer; white-space: nowrap;
+  font-family: var(--pixel); font-size: 8px; letter-spacing: 1px; padding: 3px 6px;
+  background: var(--bg); color: var(--accent); border: 2px solid var(--accent); border-radius: var(--round);
+}
+.copy-mini:hover { color: var(--gold); border-color: var(--gold); }
+@media (prefers-reduced-motion: reduce) {
+  .drawer, .drawer.open, .meter i { transition: none; }
+}
+
 @media (max-width: 620px) {
   .mod { grid-template-columns: 1fr; }
   .stage { width: 200px; }
@@ -223,6 +270,56 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
 
 </head>
 <body>
+<button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="drawer"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>МЕНЮ</button>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Меню" inert>
+  <div class="drawer-top">
+    <span>МЕНЮ</span>
+    <button class="drawer-x" id="drawer-x" type="button" aria-label="Закрыть меню">X</button>
+  </div>
+  <div class="drawer-tabs" role="tablist" aria-label="Разделы меню">
+    <button type="button" role="tab" aria-selected="true" aria-controls="pane-quiz" data-pane="pane-quiz">КАКОЙ МОД?</button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="pane-help" data-pane="pane-help">ПОМОЩЬ</button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="designs" data-pane="designs">ДИЗАЙН</button>
+  </div>
+    <section class="box quiz" id="pane-quiz" aria-labelledby="qz">
+      <h2 id="qz">КАКОЙ МОД МНЕ НУЖЕН?</h2>
+      <div id="quiz" aria-live="polite"></div>
+    </section>
+    <section class="box faq" id="pane-help" aria-labelledby="help" hidden>
+      <h2 id="help">ПОМОЩЬ</h2>
+      <details><summary>Игра вылетает после установки мода</summary><div>
+        <p>Чаще всего мод не подходит к сборке. Файл для NeoForge не работает на Fabric, и наоборот. Kub Bot сейчас есть только для NeoForge 1.21.1.</p>
+        <p>Ещё проверь: в папке <code class="inline">mods</code> нет старой версии того же мода, а для Fabric в сборке стоит Fabric API.</p>
+      </div></details>
+      <details><summary>Мод стоит, но меню не открывается</summary><div>
+        <p>Kub Client — <kbd>Right Shift</kbd> (правый Shift). Клавишу можно поменять в игре: Настройки → Управление.</p>
+        <p>Мод-меню Undertale — <kbd>M</kbd>, на русской раскладке это Ь. AIR MOD — <kbd>=</kbd>, внутри уровня.</p>
+        <p>Kub Bot без меню: напиши в чат «бот помощь».</p>
+      </div></details>
+      <details><summary>Где папка mods?</summary><div>
+        <p>В GD Launcher или Prism нажми на сборку правой кнопкой и выбери «Открыть папку». Внутри будет папка <code class="inline">mods</code>. Если её нет, запусти сборку один раз — она появится.</p>
+      </div></details>
+      <details><summary>Работает ли на сервере?</summary><div>
+        <p>Kub Client — только в твоих одиночных мирах. На чужих серверах читы запрещены, за них банят.</p>
+        <p>Kub Bot работает на сервере, если там тоже стоит Kub Bot. Можно играть с другом по сети или через Essential.</p>
+      </div></details>
+      <details><summary>Мак или Виндовс?</summary><div>
+        <p>Моды для Minecraft, мод-меню Undertale и Kub Weird для Sandboxels работают и на Маке, и на Виндовс. AIR MOD для Geometry Dash — на Маке и на Виндовс.</p>
+      </div></details>
+      <details><summary>Как обновить мод?</summary><div>
+        <p>Удали старый файл из папки <code class="inline">mods</code> и положи новый. Что поменялось, написано в «Что нового» у каждого мода.</p>
+      </div></details>
+      <details><summary>Это безопасно?</summary><div>
+        <p>Скачивай моды только с этого сайта. Перед установкой делай копию мира или сохранения — так ничего не потеряешь.</p>
+      </div></details>
+    </section>
+    <section class="box designs" id="designs" aria-labelledby="dz" hidden>
+      <h2 id="dz">ДРУГИЕ ДИЗАЙНЫ САЙТА</h2>
+      <div class="design-list" id="design-list"></div>
+      <p class="note">Сайт запомнит выбранный дизайн.</p>
+    </section>
+</aside>
 <div class="wrap">
   <header>
     <span class="tag">ФАНАТСКИЕ МОДЫ</span>
@@ -238,22 +335,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <button class="game" aria-pressed="false" type="button" data-show="gd">GEOMETRY DASH</button>
     <button class="game" aria-pressed="false" type="button" data-show="mc">MINECRAFT</button>
     <button class="game" aria-pressed="false" type="button" data-show="sbx">SANDBOXELS</button>
-    <span class="nav-side">
-      <button class="game design-link" type="button" aria-expanded="false" aria-controls="designs">ДИЗАЙН</button>
-      <a class="game help-link" href="#help">? ПОМОЩЬ</a>
-    </span>
   </nav>
-
-  <section class="box designs" id="designs" aria-labelledby="dz" hidden>
-    <h2 id="dz">ДРУГИЕ ДИЗАЙНЫ САЙТА</h2>
-    <div class="design-list" id="design-list"></div>
-    <p class="note">Сайт запомнит выбранный дизайн.</p>
-  </section>
-
-  <section class="box quiz" aria-labelledby="qz">
-    <h2 id="qz">КАКОЙ МОД МНЕ НУЖЕН?</h2>
-    <div id="quiz" aria-live="polite"></div>
-  </section>
 
   <section class="box mod" aria-labelledby="m1" data-game="ut">
     <div class="stage"><canvas id="knight" width="64" height="64" aria-label="Чёрный рыцарь с голубыми мечами"></canvas></div>
@@ -791,35 +873,6 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     <p class="note">В браузерной версии: открой «Mods», вставь <code class="inline">https://iozikde-hue.github.io/kub_weird.js</code> и нажми «Add».</p>
   </section>
 
-  <section class="box faq" aria-labelledby="help" style="scroll-margin-top:16px">
-    <h2 id="help">ПОМОЩЬ</h2>
-    <details><summary>Игра вылетает после установки мода</summary><div>
-      <p>Чаще всего мод не подходит к сборке. Файл для NeoForge не работает на Fabric, и наоборот. Kub Bot сейчас есть только для NeoForge 1.21.1.</p>
-      <p>Ещё проверь: в папке <code class="inline">mods</code> нет старой версии того же мода, а для Fabric в сборке стоит Fabric API.</p>
-    </div></details>
-    <details><summary>Мод стоит, но меню не открывается</summary><div>
-      <p>Kub Client — <kbd>Right Shift</kbd> (правый Shift). Клавишу можно поменять в игре: Настройки → Управление.</p>
-      <p>Мод-меню Undertale — <kbd>M</kbd>, на русской раскладке это Ь. AIR MOD — <kbd>=</kbd>, внутри уровня.</p>
-      <p>Kub Bot без меню: напиши в чат «бот помощь».</p>
-    </div></details>
-    <details><summary>Где папка mods?</summary><div>
-      <p>В GD Launcher или Prism нажми на сборку правой кнопкой и выбери «Открыть папку». Внутри будет папка <code class="inline">mods</code>. Если её нет, запусти сборку один раз — она появится.</p>
-    </div></details>
-    <details><summary>Работает ли на сервере?</summary><div>
-      <p>Kub Client — только в твоих одиночных мирах. На чужих серверах читы запрещены, за них банят.</p>
-      <p>Kub Bot работает на сервере, если там тоже стоит Kub Bot. Можно играть с другом по сети или через Essential.</p>
-    </div></details>
-    <details><summary>Мак или Виндовс?</summary><div>
-      <p>Моды для Minecraft, мод-меню Undertale и Kub Weird для Sandboxels работают и на Маке, и на Виндовс. AIR MOD для Geometry Dash — на Маке и на Виндовс.</p>
-    </div></details>
-    <details><summary>Как обновить мод?</summary><div>
-      <p>Удали старый файл из папки <code class="inline">mods</code> и положи новый. Что поменялось, написано в «Что нового» у каждого мода.</p>
-    </div></details>
-    <details><summary>Это безопасно?</summary><div>
-      <p>Скачивай моды только с этого сайта. Перед установкой делай копию мира или сохранения — так ничего не потеряешь.</p>
-    </div></details>
-  </section>
-
   <section class="box support" aria-labelledby="sup">
     <h3 id="sup">* ПОДДЕРЖАТЬ АВТОРА</h3>
     <p>Все моды здесь бесплатные. Если тебе понравилось, скоро здесь можно будет поддержать автора, чтобы он делал больше модов.</p>
@@ -994,6 +1047,7 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       var dl = el("div", "dl");
       if (r.href) { var a = el("a", "btn big", "СКАЧАТЬ"); a.href = r.href; a.setAttribute("download", ""); dl.appendChild(a); }
       if (r.tab) dl.appendChild(btn("btn", "КАК УСТАНОВИТЬ", function () {
+        closeMenu();
         document.querySelector('.game[data-show="' + r.tab + '"]').click();
         document.getElementById(r.go).scrollIntoView({ behavior: "smooth" });
       }));
@@ -1016,7 +1070,6 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
     ["white", "БЕЛЫЙ", "#ffffff", "#e2e2e6", "#2563eb", "#18181b"]
   ];
   var root = document.documentElement, list = document.getElementById("design-list");
-  var panel = document.getElementById("designs"), open = document.querySelector(".design-link");
   function cur() { return root.dataset.design || ""; }
   D.forEach(function (d) {
     var b = document.createElement("button");
@@ -1035,11 +1088,6 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
   });
   function mark() { list.querySelectorAll(".design-card").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.d === cur() ? "true" : "false"); }); }
   mark();
-  open.addEventListener("click", function () {
-    panel.hidden = !panel.hidden;
-    open.setAttribute("aria-expanded", panel.hidden ? "false" : "true");
-    if (!panel.hidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  });
 
   // Майнкрафт: фон — разрез земли на всю высоту страницы. Наверху трава, ниже земля,
   // камень с рудами, глубинный сланец с алмазами, лава и бедрок в самом низу.
@@ -1112,6 +1160,98 @@ footer { font-size: 14px; color: var(--dim); display: grid; gap: 6px; border-top
       tabs.forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
       document.querySelectorAll("[data-game]").forEach(function (s) { s.hidden = s.dataset.game !== b.dataset.show; });
     });
+  });
+})();
+
+// Меню слева: выдвигается по кнопке, внутри три раздела
+var closeMenu;
+(function () {
+  var btn = document.getElementById("menu-btn"), drawer = document.getElementById("drawer");
+  var scrim = document.getElementById("scrim"), x = document.getElementById("drawer-x");
+  var main = document.querySelector(".wrap"), tabs = drawer.querySelectorAll("[data-pane]");
+  function open() {
+    drawer.inert = false; drawer.classList.add("open"); scrim.hidden = false;
+    main.inert = true; btn.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+    x.focus();
+  }
+  closeMenu = function () {
+    if (!drawer.classList.contains("open")) return;
+    drawer.classList.remove("open"); drawer.inert = true; scrim.hidden = true;
+    main.inert = false; btn.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+    btn.focus({ preventScroll: true });
+  };
+  function pick(id) {
+    tabs.forEach(function (t) {
+      var on = t.dataset.pane === id;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      document.getElementById(t.dataset.pane).hidden = !on;
+    });
+    try { localStorage.setItem("menu-pane", id); } catch (e) {}
+  }
+  tabs.forEach(function (t) { t.addEventListener("click", function () { pick(t.dataset.pane); }); });
+  try { var last = localStorage.getItem("menu-pane"); if (last && document.getElementById(last)) pick(last); } catch (e) {}
+  btn.addEventListener("click", open);
+  x.addEventListener("click", closeMenu);
+  scrim.addEventListener("click", closeMenu);
+  addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenu(); });
+})();
+
+// Шаги установки: галочка «сделал» у каждого шага, сайт их запоминает
+(function () {
+  function load(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  document.querySelectorAll("ol.steps").forEach(function (ol) {
+    var h = ol.parentElement.querySelector("h2"), key = "steps-" + (h ? h.id : "");
+    var items = Array.prototype.slice.call(ol.children), done = load(key), boxes = [];
+    var bar = document.createElement("div"), txt = document.createElement("span");
+    var meter = document.createElement("span"), fill = document.createElement("i");
+    var reset = document.createElement("button");
+    bar.className = "progress"; meter.className = "meter"; meter.appendChild(fill);
+    reset.type = "button"; reset.className = "quiz-back"; reset.textContent = "СБРОСИТЬ";
+    bar.append(txt, meter, reset);
+    ol.before(bar);
+    function render() {
+      var n = 0;
+      items.forEach(function (li, i) {
+        var on = done.indexOf(i) >= 0;
+        li.classList.toggle("is-done", on); boxes[i].checked = on; if (on) n++;
+      });
+      txt.textContent = n === items.length ? "ВСЁ ГОТОВО, ИГРАЙ!" : "ГОТОВО " + n + " ИЗ " + items.length;
+      bar.classList.toggle("all", n === items.length);
+      fill.style.width = (n / items.length * 100) + "%";
+      reset.hidden = n === 0;
+    }
+    items.forEach(function (li, i) {
+      var lab = document.createElement("label"), cb = document.createElement("input");
+      lab.className = "done"; cb.type = "checkbox";
+      cb.addEventListener("change", function () {
+        done = done.filter(function (d) { return d !== i; });
+        if (cb.checked) done.push(i);
+        save(key, done); render();
+      });
+      boxes[i] = cb;
+      lab.append(cb, "СДЕЛАЛ");
+      li.firstElementChild.appendChild(lab);
+    });
+    reset.addEventListener("click", function () { done = []; save(key, done); render(); });
+    render();
+  });
+
+  // Пути к папкам и команды копируются одной кнопкой
+  document.querySelectorAll(".steps code.inline, [data-game] .note code.inline").forEach(function (c) {
+    var t = c.textContent;
+    if (!/[\/\\~%]/.test(t)) return;
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "copy-mini"; b.textContent = "КОПИЯ";
+    b.setAttribute("aria-label", "Скопировать " + t);
+    b.addEventListener("click", function () {
+      function ok() { b.textContent = "ГОТОВО"; setTimeout(function () { b.textContent = "КОПИЯ"; }, 1500); }
+      function pick() { var r = document.createRange(); r.selectNodeContents(c); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(ok, pick); else pick();
+    });
+    c.after(b);
   });
 })();
 
